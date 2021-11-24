@@ -1,0 +1,38 @@
+.app-wrapper {
+  display: grid;
+  grid-template-areas: 
+    "header header"
+    "nav profile"
+  ;
+  grid-template-columns: 60px 1fr;
+  grid-template-columns: 2fr 10fr;
+  grid-gap: 10px;
+  width: 1140px;
+  margin: 0 auto;
+}
+
+.header {
+  grid-area: header;
+  background-color: aqua;
+}
+
+.nav {
+  grid-area: nav;
+  background-color: bisque;
+}
+
+.profile {
+  grid-area: profile;
+  background-color: #999999;
+}
+
+.header__img {
+  max-width: 50px;
+  max-height: 50px;
+}
+
+.profile__img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+}
