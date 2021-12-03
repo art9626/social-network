@@ -1,0 +1,17 @@
+.nav {
+  grid-area: nav;
+  background-color: bisque;
+}
+
+.item {
+  background-color: grey;
+}
+
+.link {
+  color: #FFFFFF;
+  text-decoration: none;
+}
+
+.active {
+  color: gold;
+}

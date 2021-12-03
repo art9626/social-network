@@ -1,0 +1,14 @@
+.message {
+  margin-bottom: 10px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  background-color: #FFFFFF;
+}
+
+.from {
+  align-self: flex-start;
+}
+
+.to {
+  align-self: flex-end;
+}
