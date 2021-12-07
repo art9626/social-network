@@ -1,18 +1,17 @@
 import React from 'react';
-import { addPostCreateAction, updatePostTextCreateAction } from '../../../redux/profilePageReducer';
 import classes from './MyPosts.module.css';
 import Post from './Post/Post';
 
-const MyPosts = ({ posts, dispatch, newPostText }) => {
+const MyPosts = ({ posts, addPost,updateNewPostText, newPostText }) => {
   const postsElements = posts
     .map(item => <Post key={item.id} message={item.message} likeCount={item.likesCount} />)
 
   const onAddPost = () => {
-    dispatch(addPostCreateAction());
+    addPost();
   }
 
   const onChangePost = (e) => {
-    dispatch(updatePostTextCreateAction(e.target.value));
+   updateNewPostText(e.target.value);
   }
 
   return (

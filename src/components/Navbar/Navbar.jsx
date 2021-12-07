@@ -1,9 +1,10 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import Friends from './Friends/Friends';
+import FriendsContainer from './Friends/FriendsContainer';
+// import Friends from './Friends/Friends';
 import classes from './Navbar.module.css'
 
-const Navbar = ({sidebar}) => {
+const Navbar = ({store}) => {
 
   const activeClass = `${classes.active} ${classes.link}`;
   
@@ -36,9 +37,9 @@ const Navbar = ({sidebar}) => {
 
         <li className={classes.item}>
           <NavLink className={({ isActive }) => isActive ? activeClass : classes.link } to='/friends'>
-            Friends
+            MyFriends
           </NavLink>
-          <Friends friends={sidebar.friends} />
+          <FriendsContainer store={store} />
         </li>
       </ul>
     </nav>

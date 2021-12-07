@@ -54,7 +54,7 @@ const store = {
     this._state.dialogsPage = dialogsPageReducer(this._state.dialogsPage, action);
     this._state.sidebar = sidebarReducer(this._state.sidebar, action);
 
-    this._callSubscriber(this);
+    this._callSubscriber();
   },
 }
 
