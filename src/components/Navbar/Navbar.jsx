@@ -1,10 +1,9 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import FriendsContainer from './Friends/FriendsContainer';
-// import Friends from './Friends/Friends';
 import classes from './Navbar.module.css'
 
-const Navbar = ({store}) => {
+const Navbar = () => {
 
   const activeClass = `${classes.active} ${classes.link}`;
   
@@ -39,7 +38,7 @@ const Navbar = ({store}) => {
           <NavLink className={({ isActive }) => isActive ? activeClass : classes.link } to='/friends'>
             MyFriends
           </NavLink>
-          <FriendsContainer store={store} />
+          <FriendsContainer />
         </li>
       </ul>
     </nav>

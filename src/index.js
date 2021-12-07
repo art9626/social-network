@@ -6,15 +6,15 @@ import { BrowserRouter } from 'react-router-dom';
 
 import store from './redux/reduxStore';
 import App from './App';
-// import StoreContext from './StoreContext';
+import StoreContext from './StoreContext';
 
 function renderEntireTree() {
   ReactDOM.render(
-      <BrowserRouter>
-        <App 
-          store={store}
-        />
-      </BrowserRouter>,
+    <BrowserRouter>
+      <StoreContext.Provider value={store}>
+        <App />
+      </StoreContext.Provider>
+    </BrowserRouter>,
      document.getElementById('root')
   );
 }

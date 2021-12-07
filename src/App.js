@@ -8,26 +8,22 @@ import Navbar from './components/Navbar/Navbar';
 import News from './components/News/News';
 import Profile from './components/Profile/Profile';
 
-const App = ({ store }) => {
+const App = () => {
   return (
     <div className='app-wrapper'>
       <Header />
-      <Navbar store={store} />
+      <Navbar />
       <div className='app-content-wrapper'>
 
         <Routes>
           <Route
             path='/profile'
-            element={<Profile
-              store={store}
-            />}
+            element={<Profile />}
           />
 
           <Route
             path='/dialogs/*'
-            element={<DialogsContainer
-              store={store}
-            />}
+            element={<DialogsContainer />}
           />
 
           <Route path='/news' element={<News />} />
