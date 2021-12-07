@@ -5,7 +5,8 @@ import MyPosts from './MyPosts';
 
 const MyPostsContainer = () => {
 
-  return <StoreContext.Consumer>
+  return (
+    <StoreContext.Consumer>
       {
         store => {
           const state = store.getState();
@@ -13,22 +14,23 @@ const MyPostsContainer = () => {
           const addPost = () => {
             store.dispatch(addPostCreateAction());
           }
-        
+
           const updateNewPostText = (text) => {
             store.dispatch(updatePostTextCreateAction(text));
           }
 
           return (
-            <MyPosts 
+            <MyPosts
               addPost={addPost}
-              updateNewPostText={updateNewPostText} 
-              posts={state.profilePage.posts} 
-              newPostText={state.profilePage.newPostText} 
+              updateNewPostText={updateNewPostText}
+              posts={state.profilePage.posts}
+              newPostText={state.profilePage.newPostText}
             />
           );
         }
       }
     </StoreContext.Consumer>
+  )
 }
 
 export default MyPostsContainer;
