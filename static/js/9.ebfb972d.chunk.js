@@ -1,2 +1,0 @@
-(this["webpackJsonpmy-app"]=this["webpackJsonpmy-app"]||[]).push([[9],{293:function(e,s,n){e.exports={header:"News_header__ryuZP"}},297:function(e,s,n){"use strict";n.r(s);n(0);var t=n(293),c=n.n(t),r=n(1);s.default=function(){return console.log("news"),Object(r.jsxs)("div",{children:[Object(r.jsx)("h1",{className:c.a.header,children:"News"}),Object(r.jsx)("p",{children:"The best news in the world!"})]})}}}]);
-//# sourceMappingURL=9.ebfb972d.chunk.js.map
