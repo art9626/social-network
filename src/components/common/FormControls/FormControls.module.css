@@ -1,0 +1,32 @@
+.formControl {
+  display: flex;
+  flex-direction: column;
+}
+.formControlTextarea,
+.formControlInput {
+  border-radius: 5px;
+}
+
+.formControlTextarea {
+  width: 300px;
+  height: 100px;
+  resize: none;
+}
+
+.formControlInput {
+  width: 150px;
+  height: 20px;
+}
+
+.formControlCheckbox {
+  width: 20px;
+  height: 20px;
+}
+
+.error {
+  border: 2px solid red;
+}
+
+.errorMessage {
+  color: red;
+}

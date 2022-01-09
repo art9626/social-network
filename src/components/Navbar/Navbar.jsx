@@ -6,7 +6,7 @@ import classes from './Navbar.module.css'
 const Navbar = () => {
 
   const activeClass = `${classes.active} ${classes.link}`;
-  
+
   return (
     <nav className={classes.nav}>
       <ul>

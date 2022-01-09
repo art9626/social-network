@@ -1,13 +1,41 @@
 import React from 'react';
-import MyPostsContainer from './MyPosts/MyPostsContainer';
-import classes from './Profile.module.css'
+import MyPosts from './MyPosts/MyPosts';
 import ProfileInfo from './ProfileInfo/ProfileInfo';
 
-const Profile = () => {
-  return ( 
-    <div className={classes.profile}>
-      <ProfileInfo />
-      <MyPostsContainer />
+const Profile = ({
+  userId,
+  auth,
+  userProfile,
+  userStatus,
+  myId,
+  getProfile,
+  getStatus,
+  setStatus,
+  posts,
+  reset,
+  addPostAC,
+}) => {
+
+
+  console.log('Profile');
+
+  return (
+    <div>
+      <ProfileInfo
+        userId={userId}
+        myId={myId}
+        userProfile={userProfile}
+        userStatus={userStatus}
+        auth={auth}
+        getProfile={getProfile}
+        getStatus={getStatus}
+        setStatus={setStatus}
+      />
+      <MyPosts
+        posts={posts}
+        resetForm={reset}
+        addPost={addPostAC}
+      />
     </div>
   )
 }

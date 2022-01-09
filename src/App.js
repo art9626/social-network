@@ -1,44 +1,134 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
+import { connect } from 'react-redux';
 import { Routes, Route } from 'react-router-dom';
 import './App.css'
-import DialogsContainer from './components/Dialogs/DialogsContainer';
-import Header from './components/Header/Header';
-import Music from './components/Music/Music';
+import Preloader from './components/common/Preloader/Preloader';
+// import DialogsContainer from './components/Dialogs/DialogsContainer';
+import HeaderContainer from './components/Header/HeaderContainer';
+// import Login from './components/Login/Login';
+// import Music from './components/Music/Music';
 import Navbar from './components/Navbar/Navbar';
-import News from './components/News/News';
-import Profile from './components/Profile/Profile';
-import UsersContainer from './components/Users/UsersContainer';
+// import News from './components/News/News';
+// import ProfileContainer from './components/Profile/ProfileContainer';
+// import UsersContainer from './components/Users/UsersContainer';
+import { initApp } from './redux/appReducer';
 
-const App = () => {
-  return (
-    <div className='app-wrapper'>
-      <Header />
-      <Navbar />
-      <div className='app-content-wrapper'>
+const DialogsContainer = lazy(() => import('./components/Dialogs/DialogsContainer'));
+const Login = lazy(() => import('./components/Login/Login'));
+const ProfileContainer = lazy(() => import('./components/Profile/ProfileContainer'));
+const UsersContainer = lazy(() => import('./components/Users/UsersContainer'));
+const Music = lazy(() => import('./components/Music/Music'));
+const News = lazy(() => import('./components/News/News'));
 
-        <Routes>
-          <Route
-            path='/profile'
-            element={<Profile />}
-          />
 
-          <Route
-            path='/dialogs/*'
-            element={<DialogsContainer />}
-          />
+class App extends React.Component {
 
-          <Route
-            path='/users'
-            element={<UsersContainer />}
-          />
+  componentDidMount() {
+    this.props.initApp();
+  }
 
-          <Route path='/news' element={<News />} />
-          <Route path='/music' element={<Music />} />
-        </Routes>
+  render() {
 
+    // console.log('App');
+
+    if (!this.props.init) return <Preloader />
+
+
+    return (
+      <div className='app-wrapper'>
+        <HeaderContainer />
+        <Navbar />
+        <div className='app-content-wrapper'>
+
+          <Suspense fallback={<Preloader />}>
+            <Routes>
+              <Route
+                path='/login'
+                element={<Login />}
+              />
+
+              <Route
+                path='/profile/:userId'
+                element={<ProfileContainer />}
+              />
+
+              <Route
+                path='/profile'
+                element={<ProfileContainer />}
+              />
+
+              <Route
+                path='/dialogs/*'
+                element={<DialogsContainer />}
+              />
+
+              <Route
+                path='/users'
+                element={<UsersContainer />}
+              />
+
+              <Route path='/news' element={<News />} />
+              <Route path='/music' element={<Music />} />
+            </Routes>
+          </Suspense>
+
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 }
 
-export default App;
+
+const mapStateToProps = (state) => {
+  return {
+    init: state.app.init,
+  }
+}
+
+export default connect(mapStateToProps, { initApp })(App);
+
+
+// const App = () => {
+//   console.log('App');
+//   return (
+//     <div className='app-wrapper'>
+//       <HeaderContainer />
+//       <Navbar />
+//       <div className='app-content-wrapper'>
+
+//         <Routes>
+//           <Route
+//             path='/login'
+//             element={<Login />}
+//           />
+
+//           <Route
+//             path='/profile/:userId'
+//             element={<ProfileContainer />}
+//           />
+
+//           <Route
+//             path='/profile'
+//             element={<ProfileContainer />}
+//           />
+
+//           <Route
+//             path='/dialogs/*'
+//             element={<DialogsContainer />}
+//           />
+
+//           <Route
+//             path='/users'
+//             element={<UsersContainer />}
+//           />
+
+//           <Route path='/news' element={<News />} />
+//           <Route path='/music' element={<Music />} />
+//         </Routes>
+
+//       </div>
+//     </div>
+//   );
+// }
+
+// export default App;

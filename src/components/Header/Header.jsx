@@ -1,10 +1,21 @@
 import React from 'react';
+import { NavLink } from 'react-router-dom';
 import classes from './Header.module.css'
 
-const Header = () => {
-  return ( 
+const Header = ({ userData, logoutUser }) => {
+  return (
     <header className={classes.header}>
-      <img className={classes.img} src="https://eep.mitwork.kz/uploads/trudata/9417/18d5cb487d068bc9151183f1ee24992a.png"/>
+      <img className={classes.img} src="https://i.imgur.com/BrIpiK6.png" />
+      <div>
+        {
+          userData.isAuth === 'authorized'
+            ? <div>
+              <span> {userData.login} ({userData.email}) </span>
+              <button onClick={logoutUser}>Exit</button>
+            </div>
+            : <NavLink to='/login'>Login</NavLink>
+        }
+      </div>
     </header>
   )
 }

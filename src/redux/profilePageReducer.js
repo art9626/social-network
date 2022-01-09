@@ -1,8 +1,41 @@
-const ADD_POST = 'ADD-POST';
-const UPDATE_POST_TEXT ='UPDATE-POST-TEXT';
+import { profileAPI } from "../api/api";
 
-export const addPostCreateAction = () => ({ type: ADD_POST });
-export const updatePostTextCreateAction = (text) => ({ type: UPDATE_POST_TEXT, text });
+const ADD_POST = 'ADD-POST';
+const SET_USER_PROFILE = 'SET_USER_PROFILE';
+const SET_USER_STATUS = 'SET_USER_STATUS';
+
+export const addPostAC = (text) => ({ type: ADD_POST, text });
+export const setUserProfileAC = (userData) => ({ type: SET_USER_PROFILE, userData });
+export const setUserStatusAC = (text) => ({ type: SET_USER_STATUS, text });
+
+export const getProfile = (id) => {
+  return (dispatch) => {
+    profileAPI.getProfileData(id)
+      .then(res => {
+        dispatch(setUserProfileAC(res));
+      });
+  }
+}
+
+export const getStatus = (id) => {
+  return (dispatch) => {
+    profileAPI.getStatus(id)
+      .then(res => dispatch(setUserStatusAC(res)));
+  }
+}
+
+export const setStatus = (text) => {
+  return (dispatch) => {
+    profileAPI.setStatus(text)
+      .then(res => {
+        if (res.resultCode === 0) {
+          dispatch(setUserStatusAC(text));
+        }
+      });
+  }
+}
+
+
 
 const initialState = {
   posts: [
@@ -12,32 +45,34 @@ const initialState = {
     {id: 4, message: 'Ok, its cool', likesCount: 110},
     {id: 5, message: ';)', likesCount: 40},
   ],
-  newPostText: '',
+  userProfile: null,
+  userStatus: '',
 }
 
 const profilePageReducer = (state = initialState, action) => {
 
   switch (action.type) {
     case ADD_POST: {
-      const postText = state.newPostText
-
       return {
         ...state,
         posts: [
           ...state.posts,
           {
             id: state.posts.length + 1,
-            message: postText,
+            message: action.text,
             likesCount: 0,
           }
         ],
-        newPostText: '',
       };
     }
       
 
-    case UPDATE_POST_TEXT: {
-      return {...state, newPostText: action.text};
+    case SET_USER_PROFILE: {
+      return {...state, userProfile: action.userData};
+    }
+
+    case SET_USER_STATUS: {
+      return {...state, userStatus: action.text}
     }
   
     default:

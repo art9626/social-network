@@ -2,19 +2,19 @@ import React from 'react';
 import DialogItem from './DialogItem/DialogsItem';
 import Message from './Message/Message';
 import classes from './Dialogs.module.css';
+import AddMessageForm from './AddMessageForm/AddMessageForm';
 
-const Dialogs = ({ updateNewMessageText, sendMessage, newMessageText, dialogs, messages }) => {
+const Dialogs = ({ sendMessage, dialogs, messages, resetForm }) => {
+
   const dialogsElements = dialogs
     .map(item => <DialogItem key={item.id} name={item.name} id={item.id} />)
   const messagesElements = messages
     .map(item => <Message key={item.id} text={item.message} status={item.status} />)
 
-  const onSendMessage = () => {
-    sendMessage();
-  }
 
-  const onChangeMessage = (e) => {
-    updateNewMessageText(e.target.value);
+  const addNewMessage = (values) => {
+    sendMessage(values.newMessage)
+    resetForm('dialogsAddMessageForm')
   }
 
   return (
@@ -26,8 +26,7 @@ const Dialogs = ({ updateNewMessageText, sendMessage, newMessageText, dialogs, m
       <div className={classes.messagesContainer}>
         {messagesElements}
 
-        <textarea onChange={onChangeMessage} value={newMessageText} />
-        <button onClick={onSendMessage}>Send message</button>
+        <AddMessageForm onSubmit={addNewMessage} />
       </div>
     </div>
   );

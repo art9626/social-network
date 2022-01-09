@@ -1,9 +1,3 @@
-.img {
-  width: 100%;
-  height: 300px;
-  object-fit: cover;
-}
-
-.profileDescription {
+.profileContent {
   padding: 20px;
 }

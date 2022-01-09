@@ -40,6 +40,7 @@ const store = {
 
   
   _callSubscriber: null,
+  
   subscribe(observer) {
     this._callSubscriber = observer;
   },
