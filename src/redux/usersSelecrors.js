@@ -1,4 +1,4 @@
-import { createSelector } from "reselect";
+// import { createSelector } from "reselect";
 
 export const getUsers = (state) => state.usersPage.items;
 
@@ -15,3 +15,7 @@ export const getCurrentPage = (state) => state.usersPage.currentPage;
 export const getIsFetching = (state) => state.usersPage.isFetching;
 
 export const getFollowingInProgress = (state) => state.usersPage.followingInProgress;
+
+export const getErrorMessage = (state) => state.usersPage.errorMessage;
+
+export const getErrorMessageTimerId = (state) => state.usersPage.errorMessageTimerId;

@@ -5,7 +5,7 @@ import { loginUser } from '../../redux/authReducer';
 import LoginForm from './LoginForm/LoginForm';
 
 
-const Login = ({ isAuth, loginUser }) => {
+const Login = ({ isAuth, loginUser, captchaUrl }) => {
   const onSubmit = (formData) => {
     loginUser(formData);
   };
@@ -16,7 +16,7 @@ const Login = ({ isAuth, loginUser }) => {
   return (
     <>
       <h1>Login</h1>
-      <LoginForm onSubmit={onSubmit} />
+      <LoginForm onSubmit={onSubmit} captchaUrl={captchaUrl} />
     </>
   )
 }
@@ -26,6 +26,7 @@ const Login = ({ isAuth, loginUser }) => {
 const mapStateToProps = (state) => {
   return {
     isAuth: state.auth.isAuth,
+    captchaUrl: state.auth.captchaUrl,
   };
 }
 

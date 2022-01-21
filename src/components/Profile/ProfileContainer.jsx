@@ -5,15 +5,14 @@ import { reset } from 'redux-form';
 import { WithAuthRedirect } from '../../hoc/withAuthRedirect';
 import { WithURLData } from '../../hoc/withUrlData';
 import { getAuth } from '../../redux/authSelecrors';
-import { addPostAC, getProfile, getStatus, setStatus } from '../../redux/profilePageReducer';
-import { getPosts, getUserProfile, getUserStatus } from '../../redux/profileSelecrors';
+import { addPostAC, setProfileData, getProfile, getStatus, setPhoto, setStatus } from '../../redux/profilePageReducer';
+import { getInWaiting, getPosts, getUserProfile, getUserStatus } from '../../redux/profileSelecrors';
 import Profile from './Profile';
 
 
 class ProfileContainer extends React.Component {
 
-  componentDidMount() {
-
+  getCurrentUserData() {
     this.userId = this.props.userId;
 
     if (!this.userId) {
@@ -26,13 +25,18 @@ class ProfileContainer extends React.Component {
     this.props.getStatus(this.userId);
   }
 
+  componentDidMount() {
+    this.getCurrentUserData();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.userId !== this.props.userId) {
+      this.getCurrentUserData();
+    }
+  }
+
 
   render() {
-
-    window.props.push(this.props.posts);
-
-    console.log('ProfileContainer');
-
     return ( 
       <Profile {...this.props} userId={this.userId} myId={this.props.auth.id} />
     )
@@ -45,11 +49,12 @@ const mapStateToProps = (state) => {
     userStatus: getUserStatus(state),
     auth: getAuth(state),
     posts: getPosts(state),
+    inWaiting: getInWaiting(state),
   }
 };
 
 export default compose(
-  connect(mapStateToProps, { getProfile, getStatus, setStatus, reset, addPostAC }),
-  WithURLData,
-  WithAuthRedirect
+  connect(mapStateToProps, { getProfile, getStatus, setStatus, reset, addPostAC, setPhoto, setProfileData }),
+  WithAuthRedirect,
+  WithURLData,  
 )(ProfileContainer);

@@ -4,7 +4,6 @@ import ProfileInfo from './ProfileInfo/ProfileInfo';
 
 const Profile = ({
   userId,
-  auth,
   userProfile,
   userStatus,
   myId,
@@ -14,11 +13,10 @@ const Profile = ({
   posts,
   reset,
   addPostAC,
+  setPhoto,
+  inWaiting,
+  setProfileData
 }) => {
-
-
-  console.log('Profile');
-
   return (
     <div>
       <ProfileInfo
@@ -26,10 +24,12 @@ const Profile = ({
         myId={myId}
         userProfile={userProfile}
         userStatus={userStatus}
-        auth={auth}
         getProfile={getProfile}
         getStatus={getStatus}
         setStatus={setStatus}
+        setPhoto={setPhoto}
+        inWaiting={inWaiting}
+        setProfileData={setProfileData}
       />
       <MyPosts
         posts={posts}

@@ -5,6 +5,8 @@ export const WithAuthRedirect = (Component) => {
   
   const AuthRedirectComponent = (props) => {
 
+    // console.log('redirect');
+
     if (props.isAuth === 'notAuthorized' && !props.userId) {
       return <Navigate to='/login' />
     };

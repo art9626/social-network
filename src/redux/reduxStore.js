@@ -18,10 +18,11 @@ const reducers = combineReducers({
   form: formReducer,
 });
 
-
+// Создание store с расширением Redux Devtools
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(reducers, composeEnhancers(applyMiddleware(thunkMiddleware)));
 
+// Создание store
 // const store = createStore(reducers, applyMiddleware(thunkMiddleware));
 
 export default store;

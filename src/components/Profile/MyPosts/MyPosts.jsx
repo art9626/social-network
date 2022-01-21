@@ -10,7 +10,7 @@ import Post from './Post/Post';
 
 const MyPosts = ({ posts, addPost, resetForm }) => {
 
-  console.log('MyPosts');
+  // console.log('MyPosts');
 
   const postsElements = posts
     .map(item => <Post key={item.id} message={item.message} likeCount={item.likesCount} />)

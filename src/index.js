@@ -2,24 +2,23 @@ import './index.css';
 import reportWebVitals from './reportWebVitals';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, /* HashRouter */ } from 'react-router-dom';
 
 import store from './redux/reduxStore';
-import App from './App';
 import { Provider } from 'react-redux';
-
-
-// setInterval(() => {
-//   store.dispatch({ type: 'FAKE' })
-// }, 1000)
+import App from './App.jsx';
 
 
 ReactDOM.render(
+
+  // HashRouter using only for git hab pages diploy!!!
+  // <HashRouter>
   <BrowserRouter>
     <Provider store={store}>
       <App />
     </Provider>
   </BrowserRouter>,
+  // </HashRouter>,
     document.getElementById('root')
 );
 

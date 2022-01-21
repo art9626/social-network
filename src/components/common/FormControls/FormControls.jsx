@@ -1,5 +1,6 @@
 import React from 'react';
 import classes from './FormControls.module.css'
+import classNames from 'classnames';
 
 
 export const Textarea = ({ input, meta: { touched, error }, ...props }) => {
@@ -24,8 +25,10 @@ export const Input = ({ input, meta: { touched, error }, type, label }) => {
       <input
         type={type}
         {...input}
-        className={touched && error ? `${classes.error} ${inputTypeClass}` : inputTypeClass}>
-      </input>
+        className={classNames(inputTypeClass, { [classes.error]: touched && error })}
+      />
+
+
       {touched && (error && <span className={classes.errorMessage}> {error} </span>)}
     </div>
   );

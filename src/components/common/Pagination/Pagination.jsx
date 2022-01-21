@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import classes from './Pagination.module.css'
+import classNames from 'classnames';
 
 
 const Pagination = ({ totalCount, pageSize, currentPage, onPageClick, portionSize = 10 }) => {
@@ -29,7 +30,7 @@ const Pagination = ({ totalCount, pageSize, currentPage, onPageClick, portionSiz
             return (
               <li
                 key={item}
-                className={item === currentPage ? `${classes.pageItem} ${classes.selectedPage}` : classes.pageItem}
+                className={classNames(classes.pageItem, { [classes.selectedPage]: item === currentPage } )}
                 onClick={() => onPageClick(item)}
               >
                 {item}
