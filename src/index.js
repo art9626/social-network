@@ -6,7 +6,7 @@ import { BrowserRouter, /* HashRouter */ } from 'react-router-dom';
 
 import store from './redux/reduxStore';
 import { Provider } from 'react-redux';
-import App from './App.jsx';
+import App from './App';
 
 
 ReactDOM.render(
@@ -21,9 +21,6 @@ ReactDOM.render(
   // </HashRouter>,
     document.getElementById('root')
 );
-
-window.store = store;
-window.props = [];
 
 
 

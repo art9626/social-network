@@ -1,1 +1,0 @@
-export const getErrorMessage = (state) => state.app.errorMessage;
