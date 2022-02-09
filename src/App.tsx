@@ -11,10 +11,8 @@ import { getAuth } from './redux/authSelecrors';
 import { RootStateType } from './redux/reduxStore';
 
 
-// @ts-ignore
 const DialogsContainer = lazy(() => import('./components/Dialogs/DialogsContainer'));
 const Login = lazy(() => import('./components/Login/Login'));
-// @ts-ignore
 const ProfileContainer = lazy(() => import('./components/Profile/ProfileContainer'));
 const UsersContainer = lazy(() => import('./components/Users/UsersContainer'));
 const Music = lazy(() => import('./components/Music/Music'));
@@ -38,7 +36,7 @@ class App extends React.Component<PropsType, StateProps> {
 
   // Сделано все по документации и все работает, но почему то ts  выдает ошибку (в примере в документации тоже), из за этого ts-ignore
   // @ts-ignore
-  errorMessageTimerId: ReturnType<typeof setTimeout>;
+  errorMessageTimerId: NodeJS.Timeout;
 
   componentDidMount() {
     this.props.initApp();
@@ -55,7 +53,7 @@ class App extends React.Component<PropsType, StateProps> {
   // В данном месте сделата обработка ошибок всех сетевых запросов
   // Если любой из промисов вернул reject, сообщение о коде ошибки будет показано на экране
   // Обработка реализована через local state для более удобного управления timerId, создаваемым setTimeout
-  catchUnhandledErrors(e: any) {
+  catchUnhandledErrors(e: PromiseRejectionEvent) {
     this.setState({
       errorMessage: e.reason.message,
     })
@@ -65,7 +63,7 @@ class App extends React.Component<PropsType, StateProps> {
         errorMessage: null,
       })
     }, 2000)
-  }
+  } 
 
 
   render() {
@@ -82,7 +80,7 @@ class App extends React.Component<PropsType, StateProps> {
           <Route path='/' element={<Layout />}>
             <Route index element={this.props.auth.isAuth === 'authorized' ? <Navigate to='/profile' /> : <div>Registration</div>} />
             <Route path='login' element={<Login />} />
-            <Route path='profile/:userId' element={<ProfileContainer />} />
+            <Route path='profile/:id' element={<ProfileContainer />} />
             <Route path='profile' element={<ProfileContainer />} />
             <Route path='dialogs/*' element={<DialogsContainer />} />
             <Route path='users' element={<UsersContainer />} />

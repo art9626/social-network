@@ -1,14 +1,7 @@
-import { OperationResultType } from './profileApi';
 import { LoginFormDataType } from './../redux/authReducer';
-import axios from "axios";
+import { instance, OperationResultType } from './indexApi';
 
-const instance = axios.create({
-  baseURL: 'https://social-network.samuraijs.com/api/1.0',
-  withCredentials: true,
-  headers: {
-    "API-KEY": "9d799735-d786-4c1b-bde9-09779c3bba07"
-  },
-});
+
 
 export enum ResultCodesEnum {
   Success = 0,
@@ -20,13 +13,23 @@ type LogautResponseType = {
   resultCode: number;
 }
 
+type AuthUserDataType = {
+  id: number;
+  email: string;
+  login: string;
+};
+
+type LoginUserDataType = {
+  userId: number
+}
+
 export const authAPI = {
   getAuthUserData: () => {
-    return instance.get<OperationResultType<{ id: number; email: string; login: string; }>>('/auth/me').then(res => res.data);
+    return instance.get<OperationResultType<AuthUserDataType>>('/auth/me').then(res => res.data);
   },
 
   login: (formData: LoginFormDataType) => {
-    return instance.post<OperationResultType<{ userId: number }>>('/auth/login', formData).then(res => res.data);
+    return instance.post<OperationResultType<LoginUserDataType>>('/auth/login', formData).then(res => res.data);
   },
 
   logout: () => {

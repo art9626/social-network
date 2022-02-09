@@ -1,4 +1,3 @@
-import { OperationResultType } from './../api/profileApi';
 import { ResultCodesEnum } from './../api/authApi';
 import { InferActionsType, RootStateType } from './reduxStore';
 import { Dispatch } from "redux";
@@ -6,6 +5,7 @@ import { ThunkAction } from "redux-thunk";
 import { usersAPI } from "../api/usersApi";
 import { FollowUnfollowError } from "../utils/errors/errors";
 import { PhotosType } from "./profilePageReducer";
+import { OperationResultType } from '../api/indexApi';
 
 const FOLLOW = 'social-network/users/FOLLOW';
 const UNFOLLOW = 'social-network/users/UNFOLLOW';
@@ -17,7 +17,7 @@ const TOGGLE_FOLLOWING_IN_PROGRESS = 'social-network/users/TOGGLE_FOLLOWING_IN_P
 
 type ActionsType = InferActionsType<typeof actions>;
 
-type ThunkActionType = ThunkAction<Promise<void>, RootStateType, unknown, ActionsType>;
+type ThunkActionType = ThunkAction<void, RootStateType, unknown, ActionsType>;
 
 const actions = {
   follow: (userId: number) => ({ type: FOLLOW, userId }) as const,
@@ -39,13 +39,14 @@ const followUnfollow = async (
 ) => {
   try {
     dispatch(actions.toggleFollowingProgress(true, id));
+
     const response = await apiMethod(id);
 
     if (response.resultCode === ResultCodesEnum.Success) {
       dispatch(actionCreator(id))
     } else {
       throw new FollowUnfollowError(response.messages[0])
-    }
+    } 
   } finally {
     dispatch(actions.toggleFollowingProgress(false, id));
   }
@@ -53,13 +54,13 @@ const followUnfollow = async (
 
 export const follow = (id: number): ThunkActionType => {
   return (dispatch: Dispatch<ActionsType>) => {
-    return followUnfollow(dispatch, usersAPI.getFollow, actions.follow, id);
+    followUnfollow(dispatch, usersAPI.getFollow, actions.follow, id);
   }
 }
 
 export const unfollow = (id: number): ThunkActionType => {
   return (dispatch: Dispatch<ActionsType>) => {
-    return followUnfollow(dispatch, usersAPI.getUnfollow, actions.unfollow, id);
+    followUnfollow(dispatch, usersAPI.getUnfollow, actions.unfollow, id);
   }
 }
 

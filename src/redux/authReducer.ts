@@ -1,6 +1,5 @@
-import { AnyAction, Dispatch } from 'redux';
 import { InferActionsType, RootStateType } from './reduxStore';
-import { stopSubmit } from "redux-form";
+import { FormAction, stopSubmit } from "redux-form";
 import { ThunkAction, ThunkDispatch } from "redux-thunk";
 import { authAPI, ResultCodesEnum } from "../api/authApi";
 import { securityAPI } from "../api/securityApi";
@@ -46,7 +45,7 @@ type ActionsType = InferActionsType<typeof actions>;
 
 
 export const getAuthUser = (): ThunkActionType => {
-  return (dispatch: Dispatch<ActionsType>) => {
+  return (dispatch: ThunkDispatch<RootStateType, unknown, ActionsType>) => {
 
     return authAPI.getAuthUserData()
       .then(res => {
@@ -58,7 +57,7 @@ export const getAuthUser = (): ThunkActionType => {
 }
 
 export const loginUser = (formData: LoginFormDataType): ThunkActionType => {
-  return async (dispatch: ThunkDispatch<RootStateType, unknown, AnyAction>) => {
+  return async (dispatch: ThunkDispatch<RootStateType, unknown, ActionsType | FormAction>) => { // FormAction тип экшена, который возвращаее stopSubmit
     const response = await authAPI.login(formData)
     if (response.resultCode === ResultCodesEnum.Success) {
       dispatch(getAuthUser());
@@ -72,7 +71,7 @@ export const loginUser = (formData: LoginFormDataType): ThunkActionType => {
 }
 
 export const logoutUser = (): ThunkActionType => {
-  return async (dispatch: ThunkDispatch<RootStateType, unknown, AnyAction>) => {
+  return async (dispatch: ThunkDispatch<RootStateType, unknown, ActionsType>) => {
     const response = await authAPI.logout()
     if (response.data.resultCode === ResultCodesEnum.Success) {
       dispatch(actions.setAuthUserData({ id: null, login: null, email: null }, 'notAuthorized'));
@@ -81,7 +80,7 @@ export const logoutUser = (): ThunkActionType => {
 }
 
 const setCaptchaUrl = (): ThunkActionType => {
-  return async (dispatch: ThunkDispatch<RootStateType, unknown, AnyAction>) => {
+  return async (dispatch: ThunkDispatch<RootStateType, unknown, ActionsType>) => {
     const response = await securityAPI.getCaptchaUrl();
     dispatch(actions.setCaptchaUrl(response.url));
   }

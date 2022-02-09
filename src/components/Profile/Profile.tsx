@@ -5,10 +5,9 @@ import MyPosts from './MyPosts/MyPosts';
 import ProfileInfo from './ProfileInfo/ProfileInfo';
 
 type PropsType = {
-  userId: number | null;
+  isOwner: boolean;
   userProfile: UserProfileType | null;
   userStatus: string;
-  myId: number| null;
   setStatus: (text: string) => Promise<void>;
   posts: Array<PostType>;
   reset: (form: string) => FormAction;
@@ -19,10 +18,9 @@ type PropsType = {
 }
 
 const Profile: React.FC<PropsType> = ({
-  userId,
+  isOwner,
   userProfile,
   userStatus,
-  myId,
   setStatus,
   posts,
   reset,
@@ -35,8 +33,7 @@ const Profile: React.FC<PropsType> = ({
   return (
     <div>
       <ProfileInfo
-        userId={userId}
-        myId={myId}
+        isOwner={isOwner}
         userProfile={userProfile}
         userStatus={userStatus}
         setStatus={setStatus}

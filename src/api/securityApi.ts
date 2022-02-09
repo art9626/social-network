@@ -1,12 +1,5 @@
-import axios from "axios";
+import { instance } from "./indexApi";
 
-const instance = axios.create({
-  baseURL: 'https://social-network.samuraijs.com/api/1.0',
-  withCredentials: true,
-  headers: {
-    "API-KEY": "9d799735-d786-4c1b-bde9-09779c3bba07"
-  },
-});
 
 type GetCaptchaResponseType = {
   url: string;

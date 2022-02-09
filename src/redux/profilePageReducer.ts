@@ -1,44 +1,43 @@
 import { ResultCodesEnum } from './../api/authApi';
 import { InferActionsType, RootStateType } from './reduxStore';
-import { stopSubmit } from "redux-form";
+import { FormAction, stopSubmit } from "redux-form";
 import { ThunkAction, ThunkDispatch } from "redux-thunk";
 import { profileAPI } from "../api/profileApi";
 import { ProfileDataSaveError, ProfilePhotoSaveError, ProfileStatusSaveError } from "../utils/errors/errors";
-import { AnyAction, Dispatch } from 'redux';
 
 
 type InitialStateType = typeof initialState
 
 export type PostType = {
-  id: number
-  message: string
-  likesCount: number
+  id: number;
+  message: string;
+  likesCount: number;
 }
 
 export type UserProfileType = {
-  userId: number
-  lookingForAJob: boolean
-  lookingForAJobDescription: string
-  fullName: string
-  contacts: ContactsType
-  photos: PhotosType
+  userId: number;
+  lookingForAJob: boolean;
+  lookingForAJobDescription: string;
+  fullName: string;
+  contacts: ContactsType;
+  photos: PhotosType;
   aboutMe: string;
 }
 
 export type ContactsType = {
-  github: string
-  vk: string
-  facebook: string
-  instagram: string
-  twitter: string
-  website: string
-  youtube: string
-  mainLink: string
+  github: string;
+  vk: string;
+  facebook: string;
+  instagram: string;
+  twitter: string;
+  website: string;
+  youtube: string;
+  mainLink: string;
 }
 
 export type PhotosType = {
-  small: string | null
-  large: string | null
+  small: string | null;
+  large: string | null;
 }
 
 type ActionsType = InferActionsType<typeof actions>;
@@ -63,7 +62,7 @@ export const actions = {
 
 
 export const getProfile = (id: number | null): ThunkActionType => {
-  return async (dispatch: Dispatch<ActionsType>) => {
+  return async (dispatch: ThunkDispatch<RootStateType, unknown, ActionsType>) => {
     const response = await profileAPI.getProfileData(id)
 
     dispatch(actions.setUserProfile(response));
@@ -71,14 +70,14 @@ export const getProfile = (id: number | null): ThunkActionType => {
 }
 
 export const getStatus = (id: number): ThunkActionType => {
-  return async (dispatch: Dispatch<ActionsType>) => {
+  return async (dispatch: ThunkDispatch<RootStateType, unknown, ActionsType>) => {
     const response = await profileAPI.getStatus(id)
     dispatch(actions.setUserStatus(response));
   }
 }
 
 export const setStatus = (text: string): ThunkActionType => {
-  return async (dispatch: Dispatch<ActionsType>) => {
+  return async (dispatch: ThunkDispatch<RootStateType, unknown, ActionsType>) => {
     try {
       const response = await profileAPI.setStatus(text)
       if (response.resultCode === ResultCodesEnum.Success) {
@@ -93,7 +92,7 @@ export const setStatus = (text: string): ThunkActionType => {
 }
 
 export const setPhoto = (photo: File): ThunkActionType => {
-  return async (dispatch: Dispatch<ActionsType>) => {
+  return async (dispatch: ThunkDispatch<RootStateType, unknown, ActionsType>) => {
     try {
       dispatch(actions.toggleInWaiting(true));
       const response = await profileAPI.setProfilePhoto(photo);
@@ -111,7 +110,7 @@ export const setPhoto = (photo: File): ThunkActionType => {
 
 
 export const setProfileData = (data: UserProfileType): ThunkActionType => {
-  return async (dispatch: ThunkDispatch<RootStateType, unknown, AnyAction>, getState: () => RootStateType) => {
+  return async (dispatch: ThunkDispatch<RootStateType, unknown, ActionsType | FormAction>, getState: () => RootStateType) => {  // FormAction тип экшена, который возвращаее stopSubmit
     try {
       const id = getState().auth.id;
       const response = await profileAPI.setProfileData(data)
@@ -132,8 +131,7 @@ export const setProfileData = (data: UserProfileType): ThunkActionType => {
         // Нам нужно понимать, успешно сохранились данные на сервере или нет
         // Если успех (resultCode === ResultCodesEnum.Success) => убираем форму
         // Если нет (resultCode !== ResultCodesEnum.Success) => нужно оставить форму и подсветить непровалидированные поля
-        // Ошибке присваиваем свой класс, для того, что бы отличить ее от сетевых ошибок, которые не должны перехватится в ProfileInfo,
-        // а должны обрабататься в App
+        // Далее в ProfileInfo прокидываем эту ошибку дальше, что бы она обработалась в App
         throw new ProfileDataSaveError(response.messages[0]);
       }
     } catch (err) {      

@@ -10,32 +10,32 @@ import { getInWaiting, getPosts, getUserProfile, getUserStatus } from '../../red
 import { RootStateType } from '../../redux/reduxStore';
 import Profile from './Profile';
 
-type StatePropsType = ConnectedProps<typeof connector>;
-
+type ProfileContainerPropsType = ConnectedProps<typeof connector> & OwnPropsType;
 type OwnPropsType = {
   userId: number | null;
 };
 
-type PropsType = StatePropsType & OwnPropsType;
 
-class ProfileContainer extends React.Component<PropsType> {
+
+class ProfileContainer extends React.Component<ProfileContainerPropsType> {
 
   // @ts-ignore
-  userId: number | null;
+  isOwner: boolean;
 
   getCurrentUserData() {
-    this.userId = this.props.userId;
+    let userId = this.props.userId;
 
-    if (!this.userId) {
+    if (!userId) {
       const { isAuth, id } = this.props.auth;
       if (isAuth === 'authorized') {
-        this.userId = id;
+        userId = id;
       } 
+      this.isOwner = userId === id;
     }
     
-    if (typeof this.userId === 'number') {
-      this.props.getProfile(this.userId);
-      this.props.getStatus(this.userId);
+    if (typeof userId === 'number') {
+      this.props.getProfile(userId);
+      this.props.getStatus(userId);
     }
   }
 
@@ -43,7 +43,7 @@ class ProfileContainer extends React.Component<PropsType> {
     this.getCurrentUserData();
   }
 
-  componentDidUpdate(prevProps: PropsType) {
+  componentDidUpdate(prevProps: ProfileContainerPropsType) {
     if (prevProps.userId !== this.props.userId) {
       this.getCurrentUserData();
     }
@@ -52,7 +52,7 @@ class ProfileContainer extends React.Component<PropsType> {
 
   render() {
     return ( 
-      <Profile {...this.props} userId={this.userId} myId={this.props.auth.id} />
+      <Profile {...this.props} isOwner={this.isOwner} />
     )
   }
 }
@@ -70,8 +70,9 @@ const mapStateToProps = (state: RootStateType) => {
 const connector = connect(mapStateToProps, { getProfile, getStatus, setStatus, reset, addPost: actions.addPost, setPhoto, setProfileData });
 
 
-export default compose(
+// Обязательно типизируем возврощаемое значение функции compose, для того, что бы React.lazy в App.tsx понял, что это значение является функциональным компонентом
+export default compose<React.ComponentType>(
   connector,
-  WithAuthRedirect,
   WithURLData,  
+  WithAuthRedirect,
 )(ProfileContainer);

@@ -5,8 +5,8 @@ import UserCard from "./UserCard/UserCard";
 
 export type UsersPropsType = {
   users: Array<UserType>;
-  unfollow: (id: number) => Promise<void>;
-  follow: (id: number) => Promise<void>;
+  unfollow: (id: number) => void;
+  follow: (id: number) => void;
   followingInProgress: Array<number>;
   isAuth: IsAuthType;
 }

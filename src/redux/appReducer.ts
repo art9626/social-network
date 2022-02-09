@@ -1,11 +1,7 @@
 import { InferActionsType, RootStateType } from './reduxStore';
 import { ThunkAction, ThunkDispatch } from "redux-thunk";
 import { getAuthUser } from "./authReducer";
-import { AnyAction } from 'redux';
 
-type InitSuccessActionType = {
-  type: typeof INIT_SUCCESS
-}
 
 type InitialStateType = typeof initialState
 
@@ -24,7 +20,7 @@ const actions = {
 
 
 export const initApp = (): ThunkActionType => {
-  return (dispatch: ThunkDispatch<RootStateType, unknown, AnyAction>) => {
+  return (dispatch: ThunkDispatch<RootStateType, unknown, ActionsType>) => {
     dispatch(getAuthUser())
       .then(() => {
         dispatch(actions.initSuccess())
@@ -38,7 +34,7 @@ const initialState = {
   init: false,
 }
 
-const appReducer = (state = initialState, action: InitSuccessActionType): InitialStateType => {
+const appReducer = (state = initialState, action: ActionsType): InitialStateType => {
   switch (action.type) {
 
     case INIT_SUCCESS:

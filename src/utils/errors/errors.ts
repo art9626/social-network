@@ -1,5 +1,5 @@
 export class FollowUnfollowError extends Error {
-  constructor(message) {
+  constructor(message: string) {
     super(message);
 
     this.name = 'FollowUnfollowError';
@@ -7,7 +7,7 @@ export class FollowUnfollowError extends Error {
 }
 
 export class ProfileDataSaveError extends Error {
-  constructor(message) {
+  constructor(message: string) {
     super(message);
 
     this.name = 'ProfileDataSaveError';
@@ -15,7 +15,7 @@ export class ProfileDataSaveError extends Error {
 }
 
 export class ProfileStatusSaveError extends Error {
-  constructor(message) {
+  constructor(message: string) {
     super(message);
 
     this.name = 'ProfileStatusSaveError';
@@ -23,7 +23,7 @@ export class ProfileStatusSaveError extends Error {
 }
 
 export class ProfilePhotoSaveError extends Error {
-  constructor(message) {
+  constructor(message: string) {
     super(message);
 
     this.name = 'ProfilePhotoSaveError';

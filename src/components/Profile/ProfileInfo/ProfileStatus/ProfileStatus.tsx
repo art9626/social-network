@@ -36,6 +36,7 @@ const ProfileStatusWithHooks: React.FC<PropsType> = ({ userStatus, isOwner, setU
   const onBlurStatus = () => {
     deactivateEditMode();
     setUserStatus(status)
+      //remove.then
       .catch((err) => {
         if (err instanceof ProfileStatusSaveError) {
           showErrorMessage(err.message);

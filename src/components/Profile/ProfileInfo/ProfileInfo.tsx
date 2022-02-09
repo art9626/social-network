@@ -2,34 +2,32 @@ import React from 'react';
 import Preloader from '../../common/Preloader/Preloader';
 import classes from './ProfileInfo.module.css'
 // import ProfileStatus from './ProfileStatus/ProfileStatus';
-import ProfileStatusWithHooks from './ProfileStatus/ProfileStatusWithHooks';
 import { useState } from 'react';
 import ProfileData from './ProfileData/ProfileData';
 import ProfileDataForm from './ProfileDataForm/ProfileDataForm';
 import ProfilePhoto from './ProfilePhoto/ProfilePhoto';
 import { UserProfileType } from '../../../redux/profilePageReducer';
 import { ProfileDataSaveError } from '../../../utils/errors/errors';
+import ProfileStatus from './ProfileStatus/ProfileStatus';
 
 type PropsType = {
   userProfile: UserProfileType | null;
-  userStatus: string; 
-  setStatus: (text: string) => Promise<void>; 
-  userId: number | null; 
-  myId: number| null;
+  userStatus: string;
+  setStatus: (text: string) => Promise<void>;
+  isOwner: boolean;
   setPhoto: (photo: File) => Promise<void>;
   inWaiting: boolean;
   setProfileData: (data: UserProfileType) => Promise<void>;
 }
 
 
-const ProfileInfo: React.FC<PropsType> = ({ 
-  userProfile, 
-  userStatus, 
-  setStatus, 
-  userId, 
-  myId, 
-  setPhoto, 
-  inWaiting, 
+const ProfileInfo: React.FC<PropsType> = ({
+  userProfile,
+  userStatus,
+  setStatus,
+  isOwner,
+  setPhoto,
+  inWaiting,
   setProfileData,
 }) => {
 
@@ -43,10 +41,9 @@ const ProfileInfo: React.FC<PropsType> = ({
     setEditMode(false);
   }
 
-  const isOwner = (userId === myId);
-
   const onSubmitForm = (values: UserProfileType) => {
     setProfileData(values)
+      //remove.then
       .then(() => setEditMode(false))
       .catch((err) => {
         if (err instanceof ProfileDataSaveError) {
@@ -63,7 +60,7 @@ const ProfileInfo: React.FC<PropsType> = ({
             <div className={classes.profileContent}>
 
               <ProfilePhoto userProfile={userProfile} inWaiting={inWaiting} setPhoto={setPhoto} isOwner={isOwner} />
-              
+
               {
                 editMode
                   ? <ProfileDataForm
@@ -78,7 +75,7 @@ const ProfileInfo: React.FC<PropsType> = ({
                     isOwner={isOwner}
                   />
               }
-              <ProfileStatusWithHooks userStatus={userStatus} setUserStatus={setStatus} isOwner={isOwner} />
+              <ProfileStatus userStatus={userStatus} setUserStatus={setStatus} isOwner={isOwner} />
             </div>
           </div>
           : <Preloader />

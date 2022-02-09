@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from 'react';
+import React, { ChangeEvent, ComponentType } from 'react';
 import userIcon from '../../../../assets/images/user-icon.jpeg'
 import withShowError from '../../../../hoc/withShowError';
 import { UserProfileType } from '../../../../redux/profilePageReducer';
@@ -7,7 +7,7 @@ import Preloader from '../../../common/Preloader/Preloader';
 import classes from './ProfilePhoto.module.css'
 
 type PropsType = {
-  errorMessage: string;
+  errorMessage: string | null;
   showErrorMessage: (text: string) => void;
   userProfile: UserProfileType;
   isOwner: boolean;
@@ -15,8 +15,11 @@ type PropsType = {
   inWaiting: boolean;
 }
 
+
+
 const ProfilePhoto: React.FC<PropsType> = ({ errorMessage, showErrorMessage, isOwner, setPhoto, inWaiting, userProfile }) => {
 
+  // remove async
   const onChooseFile = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       try {

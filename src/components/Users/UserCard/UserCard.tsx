@@ -9,25 +9,33 @@ import { FollowUnfollowError } from '../../../utils/errors/errors';
 
 type UserCardPropsType = {
   user: UserType;
-  unfollow: (id: number) => Promise<void>;
-  follow: (id: number) => Promise<void>;
+  unfollow: (id: number) => void;
+  follow: (id: number) => void;
   followingInProgress: Array<number>;
   isAuth: IsAuthType;
   showErrorMessage: (text: string) => void;
   errorMessage: string;
 }
 
-const UserCard: React.FC<UserCardPropsType> = ({ user, unfollow, follow, followingInProgress, isAuth, showErrorMessage, errorMessage }) => {
+const UserCard: React.FC<UserCardPropsType> = ({ 
+  user, 
+  unfollow, 
+  follow, 
+  followingInProgress, 
+  isAuth, 
+  showErrorMessage, 
+  errorMessage 
+}) => {
 
-  const onFollowUnfollow = (method: (id: number) => Promise<void>) => {
+  const onFollowUnfollow = (method: (id: number) => void) => {
     method(user.id)
-      .catch((err) => {
-        if (err instanceof FollowUnfollowError) {
-          showErrorMessage(err.message);
-        } else {
-          throw err;
-        }
-      });
+      // .catch((err) => {
+      //   if (err instanceof FollowUnfollowError) {
+      //     showErrorMessage(err.message);
+      //   } else {
+      //     throw err;
+      //   }
+      // });
   }
 
   const onFollow = () => {

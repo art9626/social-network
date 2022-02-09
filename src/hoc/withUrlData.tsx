@@ -1,23 +1,25 @@
 import { useParams } from "react-router-dom"
+import React from 'react';
 
 
-export const WithURLData = (Component) => {
-  const URLDataComponent = (props) => {
+export const WithURLData = <WCP extends {userId: number}>(WrappedComponent: React.ComponentType<WCP>) => {
 
-    // console.log('url data');
+  const URLDataComponent: React.FC<Omit<WCP, 'userId'>> = (props) => {
+    
+    let userId: number | null = null;
 
     // Использование данного хука приводит к перерисовке URLDataComponent!!!
     // Из за этого перерисовываются вложенные компоненты!!!
-    let {userId} = useParams();
-    if (userId) {
-      userId = +userId;
+    let {id} = useParams();
+    if (id) {
+      userId = +id;
     }
 
     // let a = useParams().userId;
     // let userId = 21727;
 
     return (
-      <Component {...props} userId={userId} />
+      <WrappedComponent {...props as WCP} userId={userId} />
     )
   }
 
