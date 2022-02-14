@@ -1,0 +1,2 @@
+(this["webpackJsonpmy-app"]=this["webpackJsonpmy-app"]||[]).push([[8],{306:function(e,s,c){e.exports={header:"Music_header__2wKFr"}},309:function(e,s,c){"use strict";c.r(s);c(0);var a=c(306),n=c.n(a),r=c(1);s.default=function(){return Object(r.jsx)("div",{children:Object(r.jsx)("h1",{className:n.a.header,children:"Music"})})}}}]);
+//# sourceMappingURL=8.2ac748f3.chunk.js.map
