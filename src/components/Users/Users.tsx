@@ -9,17 +9,27 @@ export type UsersPropsType = {
   follow: (id: number) => void;
   followingInProgress: Array<number>;
   isAuth: IsAuthType;
+  errorMessage: string | null;
 }
 
 
-const Users: React.FC<UsersPropsType> = ({ users, unfollow, follow, followingInProgress, isAuth }) => {
-
+const Users: React.FC<UsersPropsType> = ({ users, unfollow, follow, followingInProgress, isAuth, errorMessage }) => {
   return (
     <div>
+      {
+        errorMessage ? <div>{errorMessage}</div> : null
+      }
       <ul>
         {users.map((item: UserType) => {
           return (
-            <UserCard key={item.id} user={item} unfollow={unfollow} follow={follow} followingInProgress={followingInProgress} isAuth={isAuth} />
+            <UserCard
+              key={item.id}
+              user={item}
+              unfollow={unfollow}
+              follow={follow}
+              followingInProgress={followingInProgress}
+              isAuth={isAuth}
+            />
           )
         })}
       </ul>

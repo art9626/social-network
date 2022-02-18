@@ -1,20 +1,33 @@
 import React, { useState } from 'react';
 import classes from './Pagination.module.css'
 import classNames from 'classnames';
+import { useSearchParams } from 'react-router-dom';
+import { FilterType, SetCurrentPageType } from '../../../redux/usersPageReducer';
 
 type PaginationPropsType = {
-  totalCount: number | null
-  pageSize: number
-  currentPage: number
-  portionSize?: number
-  onPageClick: (page: number) => void
+  totalCount: number;
+  pageSize: number;
+  currentPage: number;
+  setCurrentPage: SetCurrentPageType;
+  portionSize?: number;
+  filter: FilterType;
 }
 
-const Pagination: React.FC<PaginationPropsType> = ({ totalCount, pageSize, currentPage, onPageClick, portionSize = 10 }) => {
-  const [portionNumber, setPortionNumber] = useState(1);
+const Pagination: React.FC<PaginationPropsType> = ({ totalCount, pageSize, currentPage, portionSize = 10, setCurrentPage, filter }) => {
 
-  if (!totalCount) return null;
-  
+  const initialPortionNumber = Math.floor((currentPage - 1) / portionSize) + 1;
+  const [portionNumber, setPortionNumber] = useState(initialPortionNumber);
+
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const filterParams = { term: filter.term, friend: String(filter.friend) };
+
+
+  const onPageClick = (page: number) => {
+    setCurrentPage(page);
+    setSearchParams({ ...filterParams, page: String(page) });
+  };
+
   const pagesCount = Math.ceil(totalCount / pageSize);
   const pages: Array<number> = [];
 
@@ -27,34 +40,40 @@ const Pagination: React.FC<PaginationPropsType> = ({ totalCount, pageSize, curre
   const rightSidePageNumber = portionNumber * portionSize;
 
   return (
-    <div className={classes.pagination}>
+    <>
       {
-        portionNumber > 1 && <button onClick={() => setPortionNumber(portionNumber - 1)}>PREV</button>
-      }
+        pagesCount > 1
+          ? <div className={classes.pagination}>
+              {
+                portionNumber > 1 && <button onClick={() => setPortionNumber(portionNumber - 1)}>PREV</button>
+              }
 
-      <ul className={classes.paginationList}>
-        {pages
-          .filter(item => item >= leftSidePageNumber && item <= rightSidePageNumber)
-          .map(item => {
-            return (
-              <li
-                key={item}
-                className={classNames(classes.pageItem, { [classes.selectedPage]: item === currentPage } )}
-                onClick={() => onPageClick(item)}
-              >
-                {item}
-              </li>
-            );
-          })}
-      </ul>
+              <ul className={classes.paginationList}>
+                {pages
+                  .filter(item => item >= leftSidePageNumber && item <= rightSidePageNumber)
+                  .map(item => {
+                    return (
+                      <li
+                        key={item}
+                        className={classNames(classes.pageItem, { [classes.selectedPage]: item === currentPage })}
+                        onClick={() => onPageClick(item)}
+                      >
+                        {item}
+                      </li>
+                    );
+                  })}
+              </ul>
 
-      {
-        portionNumber < portionCount && <button onClick={() => setPortionNumber(portionNumber + 1)}>NEXT</button>
-      }
-    </div>
+              {
+                portionNumber < portionCount && <button onClick={() => setPortionNumber(portionNumber + 1)}>NEXT</button>
+              }
+            </div>
+          : null
+        }
+    </>
   )
 
 
 }
 
-export default Pagination;
+export default React.memo(Pagination);

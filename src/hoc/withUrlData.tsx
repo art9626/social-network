@@ -2,9 +2,9 @@ import { useParams } from "react-router-dom"
 import React from 'react';
 
 
-export const WithURLData = <WCP extends {userId: number}>(WrappedComponent: React.ComponentType<WCP>) => {
+export const WithURLData = <P extends {userId: number}>(WrappedComponent: React.ComponentType<P>) => {
 
-  const URLDataComponent: React.FC<Omit<WCP, 'userId'>> = (props) => {
+  const URLDataComponent: React.FC<Omit<P, 'userId'>> = (props) => {
     
     let userId: number | null = null;
 
@@ -19,7 +19,7 @@ export const WithURLData = <WCP extends {userId: number}>(WrappedComponent: Reac
     // let userId = 21727;
 
     return (
-      <WrappedComponent {...props as WCP} userId={userId} />
+      <WrappedComponent {...props as P} userId={userId} />
     )
   }
 

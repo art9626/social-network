@@ -2,10 +2,8 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import classes from './UserCard.module.css'
 import userIcon from '../../../assets/images/user-icon.jpeg'
-import withShowError from '../../../hoc/withShowError';
 import { UserType } from '../../../redux/usersPageReducer';
 import { IsAuthType } from '../../../redux/authReducer';
-import { FollowUnfollowError } from '../../../utils/errors/errors';
 
 type UserCardPropsType = {
   user: UserType;
@@ -13,8 +11,6 @@ type UserCardPropsType = {
   follow: (id: number) => void;
   followingInProgress: Array<number>;
   isAuth: IsAuthType;
-  showErrorMessage: (text: string) => void;
-  errorMessage: string;
 }
 
 const UserCard: React.FC<UserCardPropsType> = ({ 
@@ -23,19 +19,10 @@ const UserCard: React.FC<UserCardPropsType> = ({
   follow, 
   followingInProgress, 
   isAuth, 
-  showErrorMessage, 
-  errorMessage 
 }) => {
 
   const onFollowUnfollow = (method: (id: number) => void) => {
     method(user.id)
-      // .catch((err) => {
-      //   if (err instanceof FollowUnfollowError) {
-      //     showErrorMessage(err.message);
-      //   } else {
-      //     throw err;
-      //   }
-      // });
   }
 
   const onFollow = () => {
@@ -73,12 +60,9 @@ const UserCard: React.FC<UserCardPropsType> = ({
               Follow
             </button>)
         }
-        {
-          errorMessage && <span>{errorMessage}</span>
-        }
       </div>
     </li>
   );
 }
 
-export default withShowError(UserCard);
+export default UserCard;

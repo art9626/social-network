@@ -1,36 +1,24 @@
-import React, { ChangeEvent, ComponentType } from 'react';
+import React, { ChangeEvent } from 'react';
 import userIcon from '../../../../assets/images/user-icon.jpeg'
-import withShowError from '../../../../hoc/withShowError';
 import { UserProfileType } from '../../../../redux/profilePageReducer';
-import { ProfilePhotoSaveError } from '../../../../utils/errors/errors';
 import Preloader from '../../../common/Preloader/Preloader';
 import classes from './ProfilePhoto.module.css'
 
 type PropsType = {
   errorMessage: string | null;
-  showErrorMessage: (text: string) => void;
   userProfile: UserProfileType;
   isOwner: boolean;
-  setPhoto: (photo: File) => Promise<void>;
+  setPhoto: (photo: File) => void;
   inWaiting: boolean;
 }
 
 
 
-const ProfilePhoto: React.FC<PropsType> = ({ errorMessage, showErrorMessage, isOwner, setPhoto, inWaiting, userProfile }) => {
+const ProfilePhoto: React.FC<PropsType> = ({ errorMessage, isOwner, setPhoto, inWaiting, userProfile }) => {
 
-  // remove async
-  const onChooseFile = async (e: ChangeEvent<HTMLInputElement>) => {
+  const onChooseFile = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      try {
-        await setPhoto(e.target.files[0]);
-      } catch (err) {
-        if (err instanceof ProfilePhotoSaveError) {
-          showErrorMessage(err.message);
-        } else {
-          throw err;
-        }
-      }
+      setPhoto(e.target.files[0]);
     }
   }
 
@@ -52,4 +40,4 @@ const ProfilePhoto: React.FC<PropsType> = ({ errorMessage, showErrorMessage, isO
   );
 }
 
-export default withShowError(ProfilePhoto);
+export default ProfilePhoto;

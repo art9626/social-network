@@ -14,12 +14,18 @@ const SET_CURRENT_PAGE = 'social-network/users/SET_CURRENT_PAGE';
 const SET_TOTAL_COUNT = 'social-network/users/SET_TOTAL_COUNT';
 const TOGGLE_IS_FETCHING = 'social-network/users/TOGGLE_IS_FETCHING';
 const TOGGLE_FOLLOWING_IN_PROGRESS = 'social-network/users/TOGGLE_FOLLOWING_IN_PROGRESS';
+const SET_ERROR = 'social-network/users/SET_ERROR';
+const SET_FILTER = 'social-network/users/SET_FILTER';
 
 type ActionsType = InferActionsType<typeof actions>;
 
 type ThunkActionType = ThunkAction<void, RootStateType, unknown, ActionsType>;
 
-const actions = {
+export type ErrorMessagesType = {
+  onFollowUnfollowErrorMessage: string | null;
+}
+
+export const actions = {
   follow: (userId: number) => ({ type: FOLLOW, userId }) as const,
   unfollow: (userId: number) => ({ type: UNFOLLOW, userId }) as const,
   setUsers: (users: Array<UserType>) => ({ type: SET_USERS, users }) as const,
@@ -27,10 +33,14 @@ const actions = {
   setTotalCount: (totalCount: number) => ({ type: SET_TOTAL_COUNT, totalCount }) as const,
   toggleIsFetching: (isFetching: boolean) => ({ type: TOGGLE_IS_FETCHING, isFetching }) as const,
   toggleFollowingProgress: (inProgress: boolean, id: number) => ({ type: TOGGLE_FOLLOWING_IN_PROGRESS, inProgress, id }) as const,
+  setError: (errorText: string | null, errorName: string) => ({ type: SET_ERROR, errorText, errorName }) as const,
+  setFilter: (payload: { term: string, friend: boolean | null }) => ({ type: SET_FILTER, payload }) as const,
 }
 
 
 
+
+let followUnfollowErrorTimer: NodeJS.Timeout;
 
 const followUnfollow = async (
   dispatch: Dispatch<ActionsType>, apiMethod: (id: number) => Promise<OperationResultType>,
@@ -46,7 +56,18 @@ const followUnfollow = async (
       dispatch(actionCreator(id))
     } else {
       throw new FollowUnfollowError(response.messages[0])
-    } 
+    }
+  } catch (err) {
+    if (err instanceof FollowUnfollowError) {
+      dispatch(actions.setError(err.message, 'onFollowUnfollowErrorMessage'));
+
+      clearTimeout(followUnfollowErrorTimer);
+      followUnfollowErrorTimer = setTimeout(() => {
+        dispatch(actions.setError(null, 'onFollowUnfollowErrorMessage'));
+      }, 2000)
+    } else {
+      throw err;
+    }
   } finally {
     dispatch(actions.toggleFollowingProgress(false, id));
   }
@@ -65,11 +86,12 @@ export const unfollow = (id: number): ThunkActionType => {
 }
 
 
-export const getUsersList = (pageSize: number, currentPage: number, searchValue = ''): ThunkActionType => {
+export const getUsersList = (pageSize: number, currentPage: number, searchValue: string, followersFilter: boolean | null): ThunkActionType => {
   return async (dispatch: Dispatch<ActionsType>) => {
     try {
       dispatch(actions.toggleIsFetching(true));
-      const response = await usersAPI.getUsersData(pageSize, currentPage, searchValue)
+
+      const response = await usersAPI.getUsersData(pageSize, currentPage, searchValue, followersFilter);
 
       dispatch(actions.setUsers(response.items));
       dispatch(actions.setTotalCount(response.totalCount));
@@ -88,15 +110,28 @@ export type UserType = {
   followed: boolean
 }
 
+
+export type FilterType = {
+  term: string;
+  friend: boolean | null;
+};
+
+export type SetFilterType = typeof actions.setFilter;
+export type SetCurrentPageType = typeof actions.setCurrentPage;
+
 type InitialStateType = typeof initialState
 
 const initialState = {
   items: [] as Array<UserType>,
   pageSize: 50,
   currentPage: 1,
-  totalCount: null as null | number,
+  totalCount: 0,
   isFetching: false,
   followingInProgress: [] as Array<number>, // массив пользовательских id
+  errorMessages: {
+    onFollowUnfollowErrorMessage: null,
+  } as ErrorMessagesType,
+  filter: null as null | FilterType,
 };
 
 const usersPageReducer = (state = initialState, action: ActionsType): InitialStateType => {
@@ -160,6 +195,24 @@ const usersPageReducer = (state = initialState, action: ActionsType): InitialSta
         followingInProgress: action.inProgress
           ? [...state.followingInProgress, action.id]
           : state.followingInProgress.filter(item => item !== action.id),
+      }
+
+    case SET_ERROR:
+      return {
+        ...state,
+        errorMessages: {
+          ...state.errorMessages,
+          [action.errorName]: action.errorText,
+        },
+      }
+
+    case SET_FILTER:
+      return {
+        ...state,
+        filter: {
+          ...state.filter,
+          ...action.payload,
+        }
       }
 
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { connect } from 'react-redux';
 import { InitialStateType, logoutUser } from '../../redux/authReducer';
 import { RootStateType } from '../../redux/reduxStore';
 import Header from './Header';

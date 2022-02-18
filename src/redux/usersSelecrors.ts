@@ -1,11 +1,7 @@
 import { RootStateType } from './reduxStore';
-// import { createSelector } from "reselect";
+
 
 export const getUsers = (state: RootStateType) => state.usersPage.items;
-
-// export const getUsers = (state: RootStateType) => state.usersPage.items.filter(item => true);
-
-// export const getUsersSuperSelector = createSelector( getUsers, (users) => users.filter(item => true) )
 
 export const getPageSize = (state: RootStateType) => state.usersPage.pageSize;
 
@@ -16,3 +12,7 @@ export const getCurrentPage = (state: RootStateType) => state.usersPage.currentP
 export const getIsFetching = (state: RootStateType) => state.usersPage.isFetching;
 
 export const getFollowingInProgress = (state: RootStateType) => state.usersPage.followingInProgress;
+
+export const getErrorMessages = (state: RootStateType) => state.usersPage.errorMessages;
+
+export const getFilter = (state: RootStateType) => state.usersPage.filter;

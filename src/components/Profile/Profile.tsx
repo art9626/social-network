@@ -1,20 +1,33 @@
 import React from 'react';
 import { FormAction } from 'redux-form';
-import { PostType, UserProfileType } from '../../redux/profilePageReducer';
+import { ErrorMessagesType, PostType, UserProfileType } from '../../redux/profilePageReducer';
 import MyPosts from './MyPosts/MyPosts';
 import ProfileInfo from './ProfileInfo/ProfileInfo';
+
+export type SetErrorType = (errorText: string | null, errorName: string) => {
+  readonly type: "social-network/profile/SET_ERROR";
+  readonly errorText: string | null;
+  readonly errorName: string;
+};
+
+export type AddPostType = (text: string) => { 
+  readonly type: "social-network/profile/ADD-POST"; 
+  readonly text: string; 
+};
 
 type PropsType = {
   isOwner: boolean;
   userProfile: UserProfileType | null;
   userStatus: string;
-  setStatus: (text: string) => Promise<void>;
+  setStatus: (text: string) => void;
   posts: Array<PostType>;
   reset: (form: string) => FormAction;
-  addPost: (text: string) => {readonly type: "social-network/profile/ADD-POST"; readonly text: string;}
-  setPhoto: (photo: File) => Promise<void>;
+  addPost: AddPostType;
+  setPhoto: (photo: File) => void;
   inWaiting: boolean;
   setProfileData: (data: UserProfileType) => Promise<void>;
+  errorMessages: ErrorMessagesType;
+  setError: SetErrorType;
 }
 
 const Profile: React.FC<PropsType> = ({
@@ -27,7 +40,9 @@ const Profile: React.FC<PropsType> = ({
   addPost,
   setPhoto,
   inWaiting,
-  setProfileData
+  setProfileData,
+  errorMessages,
+  setError,
 }) => {
 
   return (
@@ -40,6 +55,8 @@ const Profile: React.FC<PropsType> = ({
         setPhoto={setPhoto}
         inWaiting={inWaiting}
         setProfileData={setProfileData}
+        errorMessages={errorMessages}
+        setError={setError}
       />
       <MyPosts
         posts={posts}

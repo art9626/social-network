@@ -19,8 +19,8 @@ export const usersAPI = {
   },
 
 
-  getUsersData: (pageSize = 10, currentPage = 1, searchStr = '') => {
+  getUsersData: (count = 10, page: number, term: string, friend: boolean | null ) => {
     // return instance.get(`/users?count=${pageSize}&page=${currentPage}&term=${searchStr}`).then(res => res.data);   
-    return instance.get<GetUsersDataResponseType>(`/users`, { params: {count: pageSize, page: currentPage, term: searchStr} }).then(res => res.data);
+    return instance.get<GetUsersDataResponseType>(`/users`, { params: {count, page, term, friend} }).then(res => res.data);
   },
 }

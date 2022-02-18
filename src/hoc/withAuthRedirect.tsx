@@ -1,19 +1,22 @@
 import { RootStateType } from '../redux/reduxStore';
 import { connect } from "react-redux";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import React from 'react';
 import { IsAuthType } from '../redux/authReducer';
 
 
-export const WithAuthRedirect = <WCP,>(WrappedComponent: React.ComponentType<WCP>) => {
+export const WithAuthRedirect = <P extends {userId: number | null}>(WrappedComponent: React.ComponentType<P>) => {
 
   const AuthRedirectComponent: React.FC<PropsType> = ({isAuth, ...props}) => {
+
+    const location = useLocation();
+
     if (isAuth === 'notAuthorized') {
-      return <Navigate to='/login' />
+      return <Navigate to='/login' state={{ from: location.pathname }} />
     };
 
     return (
-      <WrappedComponent {...props as WCP} />
+      <WrappedComponent {...props as P} />
     );
   }
 
@@ -33,5 +36,5 @@ export const WithAuthRedirect = <WCP,>(WrappedComponent: React.ComponentType<WCP
   type PropsType = MapStatePropsType & MapDispatchPropsType;
 
 
-  return connect<MapStatePropsType, MapDispatchPropsType, WCP, RootStateType>(mapStateToProps)(AuthRedirectComponent);
+  return connect<MapStatePropsType, MapDispatchPropsType, P, RootStateType>(mapStateToProps)(AuthRedirectComponent);
 }

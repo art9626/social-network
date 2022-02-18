@@ -6,7 +6,7 @@ import { WithAuthRedirect } from '../../hoc/withAuthRedirect';
 import { WithURLData } from '../../hoc/withUrlData';
 import { getAuth } from '../../redux/authSelecrors';
 import { actions, setProfileData, getProfile, getStatus, setPhoto, setStatus } from '../../redux/profilePageReducer';
-import { getInWaiting, getPosts, getUserProfile, getUserStatus } from '../../redux/profileSelecrors';
+import { getErrorMessages, getInWaiting, getPosts, getUserProfile, getUserStatus } from '../../redux/profileSelecrors';
 import { RootStateType } from '../../redux/reduxStore';
 import Profile from './Profile';
 
@@ -64,10 +64,22 @@ const mapStateToProps = (state: RootStateType) => {
     auth: getAuth(state),
     posts: getPosts(state),
     inWaiting: getInWaiting(state),
+    errorMessages: getErrorMessages(state),
   }
 };
 
-const connector = connect(mapStateToProps, { getProfile, getStatus, setStatus, reset, addPost: actions.addPost, setPhoto, setProfileData });
+const connector = connect(
+  mapStateToProps, 
+  { 
+    getProfile, 
+    getStatus, 
+    setStatus, 
+    reset, 
+    addPost: actions.addPost, 
+    setPhoto, 
+    setProfileData, 
+    setError: actions.setError,
+  });
 
 
 // Обязательно типизируем возврощаемое значение функции compose, для того, что бы React.lazy в App.tsx понял, что это значение является функциональным компонентом

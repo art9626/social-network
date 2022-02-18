@@ -14,6 +14,11 @@ export type PostType = {
   likesCount: number;
 }
 
+export type ErrorMessagesType = {
+  onSetPhotoErrorMessage: string | null;
+  onSetStatusErrorMessage: string | null;
+}
+
 export type UserProfileType = {
   userId: number;
   lookingForAJob: boolean;
@@ -50,6 +55,7 @@ const SET_USER_PROFILE = 'social-network/profile/SET_USER_PROFILE';
 const SET_USER_STATUS = 'social-network/profile/SET_USER_STATUS';
 const SET_PHOTO = 'social-network/profile/SET_PHOTO';
 const TOGGLE_IN_WAITING = 'social-network/profile/TOGGLE_IN_WAITING';
+const SET_ERROR = 'social-network/profile/SET_ERROR';
 
 export const actions = {
   addPost: (text: string) => ({ type: ADD_POST, text }) as const,
@@ -57,6 +63,7 @@ export const actions = {
   setUserStatus: (text: string) => ({ type: SET_USER_STATUS, text }) as const,
   setPhoto: (photos: PhotosType) => ({ type: SET_PHOTO, photos }) as const,
   toggleInWaiting: (inWaiting: boolean) => ({ type: TOGGLE_IN_WAITING, inWaiting }) as const,
+  setError: (errorText: string | null, errorName: string) => ({ type: SET_ERROR, errorText, errorName }) as const,
 }
 
 
@@ -86,21 +93,35 @@ export const setStatus = (text: string): ThunkActionType => {
         throw new ProfileStatusSaveError(response.messages[0]);
       }
     } catch (err) {
-      throw err;
+      if (err instanceof ProfileStatusSaveError) {
+        dispatch(actions.setError(err.message, 'onSetStatusErrorMessage'));
+      } else {
+        throw err;
+      }
     }
   }
 }
 
 export const setPhoto = (photo: File): ThunkActionType => {
-  return async (dispatch: ThunkDispatch<RootStateType, unknown, ActionsType>) => {
+  return async (dispatch: ThunkDispatch<RootStateType, unknown, ActionsType>, getState: () => RootStateType) => {
     try {
+      if (getState().profilePage.errorMessages.onSetPhotoErrorMessage) {
+        dispatch(actions.setError(null, 'onSetPhotoErrorMessage'));
+      }
       dispatch(actions.toggleInWaiting(true));
+
       const response = await profileAPI.setProfilePhoto(photo);
 
       if (response.resultCode === ResultCodesEnum.Success) {
         dispatch(actions.setPhoto(response.data.photos));
       } else {
         throw new ProfilePhotoSaveError(response.messages[0]);
+      }
+    } catch (err) {
+      if (err instanceof ProfilePhotoSaveError) {
+        dispatch(actions.setError(err.message, 'onSetPhotoErrorMessage'));
+      } else {
+        throw err;
       }
     } finally {
       dispatch(actions.toggleInWaiting(false));
@@ -134,7 +155,7 @@ export const setProfileData = (data: UserProfileType): ThunkActionType => {
         // Далее в ProfileInfo прокидываем эту ошибку дальше, что бы она обработалась в App
         throw new ProfileDataSaveError(response.messages[0]);
       }
-    } catch (err) {      
+    } catch (err) {
       throw err;
     }
   };
@@ -153,6 +174,10 @@ const initialState = {
   userProfile: null as UserProfileType | null,
   userStatus: '',
   inWaiting: false,
+  errorMessages: {
+    onSetPhotoErrorMessage: null,
+    onSetStatusErrorMessage: null,
+  } as ErrorMessagesType,
 }
 
 
@@ -172,7 +197,6 @@ const profilePageReducer = (state = initialState, action: ActionsType): InitialS
         ],
       };
     }
-
 
     case SET_USER_PROFILE: {
       return { ...state, userProfile: action.userData };
@@ -196,6 +220,15 @@ const profilePageReducer = (state = initialState, action: ActionsType): InitialS
       return {
         ...state,
         inWaiting: action.inWaiting,
+      }
+
+    case SET_ERROR:
+      return {
+        ...state,
+        errorMessages: {
+          ...state.errorMessages,
+          [action.errorName]: action.errorText,
+        },
       }
 
 

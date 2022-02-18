@@ -6,18 +6,21 @@ import { useState } from 'react';
 import ProfileData from './ProfileData/ProfileData';
 import ProfileDataForm from './ProfileDataForm/ProfileDataForm';
 import ProfilePhoto from './ProfilePhoto/ProfilePhoto';
-import { UserProfileType } from '../../../redux/profilePageReducer';
+import { ErrorMessagesType, UserProfileType } from '../../../redux/profilePageReducer';
 import { ProfileDataSaveError } from '../../../utils/errors/errors';
 import ProfileStatus from './ProfileStatus/ProfileStatus';
+import { SetErrorType } from '../Profile';
 
 type PropsType = {
   userProfile: UserProfileType | null;
   userStatus: string;
-  setStatus: (text: string) => Promise<void>;
+  setStatus: (text: string) => void;
   isOwner: boolean;
-  setPhoto: (photo: File) => Promise<void>;
+  setPhoto: (photo: File) => void;
   inWaiting: boolean;
   setProfileData: (data: UserProfileType) => Promise<void>;
+  errorMessages: ErrorMessagesType;
+  setError: SetErrorType;
 }
 
 
@@ -29,6 +32,8 @@ const ProfileInfo: React.FC<PropsType> = ({
   setPhoto,
   inWaiting,
   setProfileData,
+  errorMessages,
+  setError,
 }) => {
 
   const [editMode, setEditMode] = useState(false);
@@ -59,7 +64,7 @@ const ProfileInfo: React.FC<PropsType> = ({
           ? <div>
             <div className={classes.profileContent}>
 
-              <ProfilePhoto userProfile={userProfile} inWaiting={inWaiting} setPhoto={setPhoto} isOwner={isOwner} />
+              <ProfilePhoto userProfile={userProfile} inWaiting={inWaiting} setPhoto={setPhoto} isOwner={isOwner} errorMessage={errorMessages.onSetPhotoErrorMessage} />
 
               {
                 editMode
@@ -75,7 +80,13 @@ const ProfileInfo: React.FC<PropsType> = ({
                     isOwner={isOwner}
                   />
               }
-              <ProfileStatus userStatus={userStatus} setUserStatus={setStatus} isOwner={isOwner} />
+              <ProfileStatus
+                userStatus={userStatus}
+                setUserStatus={setStatus}
+                isOwner={isOwner}
+                errorMessage={errorMessages.onSetStatusErrorMessage}
+                setError={setError}
+              />
             </div>
           </div>
           : <Preloader />
