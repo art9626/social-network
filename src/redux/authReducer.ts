@@ -45,18 +45,16 @@ type ActionsType = InferActionsType<typeof actions>;
 
 
 export const getAuthUser = (): ThunkActionType => {
-  return (dispatch: ThunkDispatch<RootStateType, unknown, ActionsType>) => {
+  return async (dispatch: ThunkDispatch<RootStateType, unknown, ActionsType>) => {
 
-    return authAPI.getAuthUserData()
-      .then(res => {
-        if (res.resultCode === ResultCodesEnum.Success) {
-          dispatch(actions.setAuthUserData(res.data, 'authorized'));
-        }
-      })
+    const response = await authAPI.getAuthUserData()
+    if (response.resultCode === ResultCodesEnum.Success) {
+      dispatch(actions.setAuthUserData(response.data, 'authorized'));
+    }
   }
 }
 
-export const loginUser = (formData: LoginFormDataType): ThunkActionType => {
+export const loginUserThunk = (formData: LoginFormDataType): ThunkActionType => {
   return async (dispatch: ThunkDispatch<RootStateType, unknown, ActionsType | FormAction>) => { // FormAction тип экшена, который возвращаее stopSubmit
     const response = await authAPI.login(formData)
     if (response.resultCode === ResultCodesEnum.Success) {
@@ -70,7 +68,7 @@ export const loginUser = (formData: LoginFormDataType): ThunkActionType => {
   }
 }
 
-export const logoutUser = (): ThunkActionType => {
+export const logoutUserThunk = (): ThunkActionType => {
   return async (dispatch: ThunkDispatch<RootStateType, unknown, ActionsType>) => {
     const response = await authAPI.logout()
     if (response.data.resultCode === ResultCodesEnum.Success) {

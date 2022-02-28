@@ -1,50 +1,30 @@
-import React, { ChangeEvent } from 'react';
-import { useEffect } from 'react';
-import { useState } from 'react';
-import { SetErrorType } from '../../Profile';
-
+import { Field, Form, Formik, FormikErrors, FormikHelpers, FormikProps } from 'formik';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { actions, setStatusThunk } from '../../../../redux/profilePageReducer';
+import { getErrorMessages, getStatusEditMode, getUserStatus } from '../../../../redux/profileSelecrors';
 type PropsType = {
-  userStatus: string;
   isOwner: boolean;
-  setUserStatus: (text: string) => void;
-  errorMessage: string | null;
-  setError: SetErrorType;
 }
 
-const ProfileStatusWithHooks: React.FC<PropsType> = ({
-  userStatus,
-  isOwner,
-  setUserStatus,
-  errorMessage,
-  setError
-}) => {
+export const ProfileStatus: React.FC<PropsType> = ({ isOwner }) => {
 
-  const [editMode, setEditMode] = useState(false);
-  const [status, setStatus] = useState(userStatus);
+  const errorMessages = useSelector(getErrorMessages);
+  const userStatus = useSelector(getUserStatus);
+  const statusEditMode = useSelector(getStatusEditMode);
 
-  useEffect(() => {
-    setStatus(userStatus);
-  }, [userStatus])
+  const dispatch = useDispatch();
+
+  const setEditMode = (state: boolean, fieldName: string) => dispatch(actions.toggleEditMode(state, fieldName));
+
+  const errorMessage = errorMessages.onSetStatusErrorMessage;
 
   const activateEditMode = () => {
     if (isOwner) {
-      setEditMode(true)
+      setEditMode(true, 'statusEditMode')
     }
   };
 
-  const deactivateEditMode = () => setEditMode(false);
-
-  const onChangeStatus = (e: ChangeEvent<HTMLInputElement>) => {
-    if (errorMessage) {
-      setError(null, 'onSetStatusErrorMessage');
-    }
-    setStatus(e.target.value)
-  };
-
-  const onBlurStatus = () => {
-    deactivateEditMode();
-    setUserStatus(status)
-  }
 
   return (
     <div>
@@ -52,18 +32,66 @@ const ProfileStatusWithHooks: React.FC<PropsType> = ({
         errorMessage && <div>{errorMessage}</div>
       }
       {
-        editMode
-          ? <input
-            autoFocus={true}
-            onBlur={onBlurStatus}
-            onChange={onChangeStatus}
-            type="text"
-            value={status}
-          />
+        statusEditMode
+          ? <ProfileStatusForm />
           : <span onDoubleClick={activateEditMode}>{userStatus || '---'}</span>
       }
     </div>
   )
 }
 
-export default ProfileStatusWithHooks;
+
+
+
+
+
+type InitialValuesType = {
+  userStatus: string;
+}
+
+const ProfileStatusForm: React.FC = () => {
+
+  const userStatus = useSelector(getUserStatus);
+  const dispatch = useDispatch();
+  const setStatus = (text: string) => dispatch(setStatusThunk(text));
+
+  const initialValues: InitialValuesType = { userStatus };
+
+
+  return (
+    <Formik
+      initialValues={initialValues}
+      onSubmit={(values: InitialValuesType, { setSubmitting }: FormikHelpers<InitialValuesType>) => {
+        setStatus(values.userStatus);
+        setSubmitting(false);
+      }}
+      validate={(values: InitialValuesType) => {
+        const errors: FormikErrors<InitialValuesType> = {};
+        
+        if (values.userStatus.length > 300) {
+          errors.userStatus = 'Status max length 300 symbols';
+        }
+
+        return errors;
+      }}
+    >
+      {
+        (props: FormikProps<InitialValuesType>) => {
+          const { errors, touched, isSubmitting } = props;
+
+          return (
+            <Form>
+              <Field 
+                name='userStatus'
+                type='text'
+                autoComplete='off'
+              />
+              <button type='submit' disabled={isSubmitting}>Save status</button>
+              { errors.userStatus && touched.userStatus && <div>{errors.userStatus}</div> }
+            </Form>
+          );
+        }
+      }
+    </Formik>
+  );
+}

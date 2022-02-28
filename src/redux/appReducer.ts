@@ -19,7 +19,7 @@ const actions = {
 
 
 
-export const initApp = (): ThunkActionType => {
+export const initAppThunk = (): ThunkActionType => {
   return (dispatch: ThunkDispatch<RootStateType, unknown, ActionsType>) => {
     dispatch(getAuthUser())
       .then(() => {

@@ -9,3 +9,7 @@ export const getPosts = (state: RootStateType) => state.profilePage.posts;
 export const getInWaiting = (state: RootStateType) => state.profilePage.inWaiting;
 
 export const getErrorMessages = (state: RootStateType) => state.profilePage.errorMessages;
+
+export const getProfileInfoEditMode = (state: RootStateType) => state.profilePage.profileInfoEditMode;
+
+export const getStatusEditMode = (state: RootStateType) => state.profilePage.statusEditMode;

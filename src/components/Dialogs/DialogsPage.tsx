@@ -3,13 +3,23 @@ import DialogItem from './DialogItem/DialogsItem';
 import Message from './Message/Message';
 import classes from './Dialogs.module.css';
 import AddMessageForm from './AddMessageForm/AddMessageForm';
-import { DialogsPropsType } from './DialogsContainer';
+import { useDispatch, useSelector } from 'react-redux';
+import { getDialogs, getMessages } from '../../redux/dialogsPageSelectors';
+import { reset } from 'redux-form';
+import { actions } from '../../redux/dialogsPageReducer';
 
 export type AddMessageFormDataType = {
   newMessage: string;
 }
 
-const Dialogs: React.FC<DialogsPropsType> = ({ sendMessage, dialogs, messages, resetForm }) => {
+const DialogsPage: React.FC = React.memo(() => {
+  const dialogs = useSelector(getDialogs);
+  const messages = useSelector(getMessages);
+
+  const dispatch = useDispatch();
+
+  const resetForm = (form: string) => dispatch(reset(form));
+  const sendMessage = (text: string) => dispatch(actions.sendMessage(text));
 
   const dialogsElements = dialogs
     .map(item => <DialogItem key={item.id} name={item.name} id={item.id} />)
@@ -34,6 +44,6 @@ const Dialogs: React.FC<DialogsPropsType> = ({ sendMessage, dialogs, messages, r
       </div>
     </div>
   );
-}
+});
 
-export default Dialogs;
+export default DialogsPage;

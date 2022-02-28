@@ -1,24 +1,23 @@
 import React from 'react';
-import { FormAction } from 'redux-form';
-import { PostType } from '../../../redux/profilePageReducer';
-import { AddPostType } from '../Profile';
+import { useDispatch, useSelector } from 'react-redux';
+import { FormAction, reset } from 'redux-form';
+import { actions, PostType } from '../../../redux/profilePageReducer';
+import { getPosts } from '../../../redux/profileSelecrors';
 import AddNewPostForm from './AddNewPostForm/AddNewPostForm';
 import Post from './Post/Post';
-
-type PropsType = {
-  posts: Array<PostType>;
-  addPost: AddPostType;
-  resetForm: (form: string) => FormAction;
-}
 
 export type NewPostMessageType = {
   newPost: string;
 }
 
-const MyPosts: React.FC<PropsType> = ({ posts, addPost, resetForm }) => {
+export const MyPosts: React.FC = React.memo(() => {
+  const posts = useSelector(getPosts);
 
-  const postsElements = posts
-    .map((item: PostType) => <Post key={item.id} message={item.message} likeCount={item.likesCount} />)
+  const dispatch = useDispatch();
+
+  const addPost = (text: string) => dispatch(actions.addPost(text));
+  const resetForm = (form: string) => dispatch(reset(form));
+
 
 
   const addNewPost = (values: NewPostMessageType) => {
@@ -32,11 +31,10 @@ const MyPosts: React.FC<PropsType> = ({ posts, addPost, resetForm }) => {
     <div>
       <AddNewPostForm onSubmit={addNewPost} />
       <ul>
-        {postsElements}
+        {
+          posts.map((item: PostType) => <Post key={item.id} message={item.message} likeCount={item.likesCount} />)
+        }
       </ul>
     </div>
   );
-}
-
-
-export default React.memo(MyPosts);
+});

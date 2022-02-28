@@ -2,28 +2,30 @@ import React from 'react';
 import { ContactsType, UserProfileType } from '../../../../redux/profilePageReducer';
 
 type PropsType = {
-  userProfile: UserProfileType | null;
+  userProfile: UserProfileType;
   activeEditMode: () => void;
   isOwner: boolean;
 }
 
-const ProfileData: React.FC<PropsType> = ({ userProfile, activeEditMode, isOwner }) => {
+export const ProfileData: React.FC<PropsType> = ({ userProfile, activeEditMode, isOwner }) => {
+
+  const { fullName, aboutMe, lookingForAJob, lookingForAJobDescription, contacts } = userProfile;
+
   return (
-    userProfile &&
     <>
-      <h2>{userProfile.fullName}</h2>
-      <p>About me: {userProfile.aboutMe}</p>
-      <p>Looking for a job: {userProfile.lookingForAJob ? 'Yes' : 'No'}</p>
+      <h2>{fullName}</h2>
+      <p>About me: {aboutMe}</p>
+      <p>Looking for a job: {lookingForAJob ? 'Yes' : 'No'}</p>
       {
-        userProfile.lookingForAJob &&
-        <p>My skills: {userProfile.lookingForAJobDescription}</p>
+        lookingForAJob &&
+        <p>My skills: {lookingForAJobDescription}</p>
       }
       <h3>Contacts</h3>
       <ul>
         {
-          Object.keys(userProfile.contacts)
+          Object.keys(contacts)
             .map((item: string) => {
-              return <Contact key={item} contactName={item} contactValue={userProfile.contacts[item as keyof ContactsType]} />
+              return <Contact key={item} contactName={item} contactValue={contacts[item as keyof ContactsType]} />
             })
         }
       </ul>
@@ -46,5 +48,3 @@ const Contact: React.FC<ContactPropsType> = ({ contactName, contactValue }) => {
     </li>
   );
 }
-
-export default ProfileData;

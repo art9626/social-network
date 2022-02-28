@@ -1,107 +1,104 @@
-import React, { lazy } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import React, { lazy, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import './App.css'
+// import './App.css'
 import Error from './components/common/Error/Error';
 import Preloader from './components/common/Preloader/Preloader';
-import Layout from './components/Layout/Layout';
-import { initApp } from './redux/appReducer';
+import { Layout } from './components/Layout/Layout';
+import { Privat } from './components/common/Private';
+import { initAppThunk } from './redux/appReducer';
 import { getInit } from './redux/appSelectors';
 import { getAuth } from './redux/authSelecrors';
-import { RootStateType } from './redux/reduxStore';
 
 
-const DialogsContainer = lazy(() => import('./components/Dialogs/DialogsContainer'));
-const Login = lazy(() => import('./components/Login/Login'));
-const ProfileContainer = lazy(() => import('./components/Profile/ProfileContainer'));
-const UsersContainer = lazy(() => import('./components/Users/UsersContainer'));
+const DialogsPage = lazy(() => import('./components/Dialogs/DialogsPage'));
+const LoginPage = lazy(() => import('./components/Login/LoginPage'));
+const ProfilePage = lazy(() => import('./components/Profile/ProfilePage'));
+const UsersPage = lazy(() => import('./components/Users/UsersPage'));
 const Music = lazy(() => import('./components/Music/Music'));
 const News = lazy(() => import('./components/News/News'));
 
 
-type PropsType = ConnectedProps<typeof connector>;
 
-type StateProps = {
-  errorMessage: string | null;
-}
+const App: React.FC = () => {
+  const [errorMessage, setErrorMessage] = useState<null | string>(null);
+  const init = useSelector(getInit);
+  const auth = useSelector(getAuth);
 
-class App extends React.Component<PropsType, StateProps> {
-  constructor(props: PropsType) {
-    super(props);
-    this.state = {
-      errorMessage: null
+  const dispatch = useDispatch();
+
+  const initApp = () => dispatch(initAppThunk());
+
+  const catchUnhandledErrors = (e: PromiseRejectionEvent) => {
+    setErrorMessage(e.reason.message);
+  }
+
+  useEffect(() => {
+    initApp();
+    window.addEventListener('unhandledrejection', catchUnhandledErrors);
+
+    return () => window.removeEventListener('unhandledrejection', catchUnhandledErrors);
+  }, [])
+
+  useEffect(() => {
+    let timerId: NodeJS.Timeout;
+    if (errorMessage) {
+      timerId = setTimeout(() => {
+        setErrorMessage(null);
+      }, 2000);
     }
-    this.catchUnhandledErrors = this.catchUnhandledErrors.bind(this);
-  }
 
-  // Сделано все по документации и все работает, но почему то ts  выдает ошибку (в примере в документации тоже), из за этого ts-ignore
-  // @ts-ignore
-  errorMessageTimerId: NodeJS.Timeout;
-
-  componentDidMount() {
-    this.props.initApp();
-    // Перехватываем все не обработанные rejecton promises
-    window.addEventListener('unhandledrejection', this.catchUnhandledErrors);
-  }
-
-  componentWillUnmount() {
-    // При размонтировании удаляем обработчик события и зачищаем таймер
-    clearTimeout(this.errorMessageTimerId);
-    window.removeEventListener('unhandledrejection', this.catchUnhandledErrors);
-  }
-
-  // В данном месте сделата обработка ошибок всех сетевых запросов
-  // Если любой из промисов вернул reject, сообщение о коде ошибки будет показано на экране
-  // Обработка реализована через local state для более удобного управления timerId, создаваемым setTimeout
-  catchUnhandledErrors(e: PromiseRejectionEvent) {
-    this.setState({
-      errorMessage: e.reason.message,
-    })
-    clearTimeout(this.errorMessageTimerId);
-    this.errorMessageTimerId = setTimeout(() => {
-      this.setState({
-        errorMessage: null,
-      })
-    }, 2000)
-  } 
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [errorMessage]);
 
 
-  render() {
 
-    if (!this.props.init) return <Preloader />
+  if (!init) return <Preloader />;
 
-    return (
-      <div className='app-wrapper'>
-        {
-          this.state.errorMessage && <Error errorMessage={this.state.errorMessage} />
-        }
+  return (
+    <div className='app-wrapper'>
+      {
+        errorMessage && <Error errorMessage={errorMessage} />
+      }
 
-        <Routes>
-          <Route path='/' element={<Layout />}>
-            <Route index element={this.props.auth.isAuth === 'authorized' ? <Navigate to='/profile' /> : <div>Registration</div>} />
-            <Route path='login' element={<Login />} />
-            <Route path='profile/:id' element={<ProfileContainer />} />
-            <Route path='profile' element={<ProfileContainer />} />
-            <Route path='dialogs/*' element={<DialogsContainer />} />
-            <Route path='users' element={<UsersContainer />} />
-            <Route path='news' element={<News />} />
-            <Route path='music' element={<Music />} />
-            <Route path='*' element={<div>Error 404 Page not found</div>} />
-          </Route>
-        </Routes>
-      </div>
-    );
-  }
+      <Routes>
+        <Route path='/' element={<Layout />}>
+          <Route index element={auth.isAuth === 'authorized' ? <Navigate to='/profile' /> : <div>Registration</div>} />
+          <Route path='login' element={<LoginPage />} />
+          <Route
+            path='profile/'
+            element={
+              <Privat>
+                <ProfilePage />
+              </Privat>
+            }
+          />
+          <Route
+            path='profile/:id'
+            element={
+              <Privat>
+                <ProfilePage />
+              </Privat>
+            }
+          />
+          <Route
+            path='dialogs/*'
+            element={
+              <Privat>
+                <DialogsPage />
+              </Privat>
+            }
+          />
+          <Route path='users' element={<UsersPage />} />
+          <Route path='news' element={<News />} />
+          <Route path='music' element={<Music />} />
+          <Route path='*' element={<div>Error 404 Page not found</div>} />
+        </Route>
+      </Routes>
+    </div>
+  );
 }
 
-
-const mapStateToProps = (state: RootStateType) => {
-  return {
-    init: getInit(state),
-    auth: getAuth(state),
-  }
-}
-
-const connector = connect(mapStateToProps, { initApp });
-
-export default connector(App);
+export default App;

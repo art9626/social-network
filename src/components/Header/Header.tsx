@@ -1,29 +1,36 @@
+import { AppBar, Button, Toolbar, Typography } from '@mui/material';
 import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { InitialStateType } from '../../redux/authReducer';
-import classes from './Header.module.css'
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, NavLink } from 'react-router-dom';
+import { logoutUserThunk } from '../../redux/authReducer';
+import { getAuth } from '../../redux/authSelecrors';
+// import classes from './Header.module.css'
 
-type PropsType = {
-  userData: InitialStateType;
-  logoutUser: () => void;
-}
 
-const Header: React.FC<PropsType> = ({ userData, logoutUser }) => {
+export const Header: React.FC = React.memo(() => {
+  const userData = useSelector(getAuth);
+  const { isAuth, login, email } = userData;
+
+  const dispatch = useDispatch();
+
+  const logoutUser = () => dispatch(logoutUserThunk());
+
   return (
-    <header className={classes.header}>
-      <img className={classes.img} src="https://i.imgur.com/BrIpiK6.png" />
-      <div>
+    <AppBar position='static'>
+      <Toolbar>
+        <img style={{height: '50px', width: '50px', marginRight: 'auto'}}  src="https://i.imgur.com/BrIpiK6.png" />
         {
-          userData.isAuth === 'authorized'
-            ? <div>
-              <span> {userData.login} ({userData.email}) </span>
-              <button onClick={logoutUser}>Exit</button>
-            </div>
-            : <NavLink to='/login'>Login</NavLink>
+          isAuth === 'authorized'
+            ? <>
+                <Typography sx={{mr: 5}}>
+                  {login} ({email})
+                </Typography>
+                <Button  variant="contained" color='error' onClick={logoutUser}>Logout</Button>
+              </>
+            : <Link to='/login'>Login</Link>
         }
-      </div>
-    </header>
-  )
-}
+      </Toolbar>
+    </AppBar>
 
-export default Header;
+  )
+});

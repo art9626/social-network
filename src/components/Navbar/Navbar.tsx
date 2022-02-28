@@ -4,7 +4,7 @@ import classes from './Navbar.module.css'
 import classNames from 'classnames';
 
 
-const Navbar: React.FC = () => {
+export const Navbar: React.FC = () => {
   return (
     <nav className={classes.nav}>
       <ul>
@@ -41,5 +41,3 @@ const Navbar: React.FC = () => {
     </nav>
   )
 }
-
-export default Navbar;

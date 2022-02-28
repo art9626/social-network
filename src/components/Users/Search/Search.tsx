@@ -1,78 +1,89 @@
-import React, { ChangeEvent, FormEvent, MouseEvent, useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { FilterType, SetCurrentPageType, SetFilterType } from '../../../redux/usersPageReducer';
+import { Field, Form, Formik, FormikProps } from 'formik';
+import React, { MouseEvent } from 'react';
+import { FilterType, SetFilterType } from '../../../redux/usersPageReducer';
 
+type FormValues = {
+  search: string;
+  friend: boolean | null | string;
+}
 
 type SearchPropsType = {
   filter: FilterType;
   setFilter: SetFilterType;
-  setCurrentPage: SetCurrentPageType;
 }
 
 
-const Search: React.FC<SearchPropsType> = ({ filter, setFilter, setCurrentPage }) => {
 
-  const [searchValue, setSearchValue] = useState('');
-  const [followersFilter, setFollowersFilter] = useState<boolean | null>(null);
-  const [searchParams, setSearchParams] = useSearchParams();
+export const Search: React.FC<SearchPropsType> = React.memo(({ setFilter, filter }) => {
 
-  const newFilterParams = { term: searchValue, friend: String(followersFilter) };
-  const newFilter: FilterType = { term: searchValue, friend: followersFilter };
+  // const [searchParams, setSearchParams] = useSearchParams();
 
-  useEffect(() => {
-    setSearchValue(filter.term);
-    setFollowersFilter(filter.friend)
-  }, []);
-
-  const onSubmitHandler = (e: FormEvent<HTMLFormElement>) => {
+  const onClearSearchValue = (e: MouseEvent<HTMLButtonElement>, setFieldValue: any) => {
     e.preventDefault();
-  
-    setSearchParams(newFilterParams);
-    setCurrentPage(1);
-    setFilter(newFilter);
-  };
-
-  const onClearSearchValue = (e: MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-
-    setSearchValue('');
-    setFollowersFilter(null);
-    setSearchParams({});
-    setFilter({ term: '', friend: null });
-    setCurrentPage(1);
+    
+    setFieldValue('search', '');
+    setFieldValue('friend', 'null');
+    
+    // setSearchParams({});
+    setFilter({ term: '', friend: null }, 1);
   }
 
-  const onChangeSearchValue = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearchValue(e.target.value);
-  }
-  
-
-  const onChangeFollowersFilter = (e: ChangeEvent<HTMLInputElement>) => {
-    const filtredValue = e.target.value === 'true' ? true : e.target.value === 'false' ? false : null;
-    setFollowersFilter(filtredValue)
-  }
 
   return (
-    <div>
-      <form onSubmit={onSubmitHandler}>
-        <input value={searchValue} onChange={onChangeSearchValue} type='text' name='search' />
-        <label htmlFor='followed'>
-          <input id='followed' type='radio' value='true' onChange={onChangeFollowersFilter} checked={followersFilter === true} />
-          followed
-        </label>
-        <label htmlFor='unfollowed'>
-          <input id='unfollowed' type='radio' value='false' onChange={onChangeFollowersFilter} checked={followersFilter === false} />
-          unfollowed
-        </label>
-        <label htmlFor='all'>
-          <input id='all' type='radio' value='' onChange={onChangeFollowersFilter} checked={followersFilter === null} />
-          all
-        </label>
-        <button type='submit'>Find</button>
-        <button onClick={onClearSearchValue}>Clear</button>
-      </form>
-    </div>
-  )
-}
+      <Formik<FormValues>
+        initialValues={{
+          search: filter.term,
+          friend: String(filter.friend),
+        }}
+        onSubmit={(
+          { search, friend },
+          { setSubmitting }
+        ) => {
+          // if (typeof friend === 'string') {
+          //   const newSearchParams = { term: search, friend: friend };
+          //   setSearchParams(newSearchParams);
+          // }
+          
+          const usersFilterValue = friend === 'true' ? true : friend === 'false' ? false : null;
+          const newFilter: FilterType = { term: search, friend: usersFilterValue };
 
-export default React.memo(Search);
+          setFilter(newFilter, 1);
+          setSubmitting(false);
+        }}
+      >
+
+        {
+          (props: FormikProps<FormValues>) => {
+            const { isSubmitting, setFieldValue } = props;
+
+            return (
+              <Form>
+                <Field
+                  type='text'
+                  name='search'
+                  autoComplete="off"
+                />
+                <div role='group' aria-labelledby='my-radio-group'>
+                  <label>
+                    <Field type='radio' name='friend' value='true' />
+                    followed
+                  </label>
+                  <label>
+                    <Field type='radio' name='friend' value='false' />
+                    unfollowed
+                  </label>
+                  <label>
+                    <Field type='radio' name='friend' value='null' />
+                    all
+                  </label>
+                </div>
+                <button type='submit' disabled={isSubmitting}>Find</button>
+                <button onClick={(e) => onClearSearchValue(e, setFieldValue)}>Clear</button>
+              </Form>
+            )
+          }
+        }
+      </Formik>
+  );
+});
+

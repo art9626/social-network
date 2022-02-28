@@ -34,7 +34,7 @@ export const actions = {
   toggleIsFetching: (isFetching: boolean) => ({ type: TOGGLE_IS_FETCHING, isFetching }) as const,
   toggleFollowingProgress: (inProgress: boolean, id: number) => ({ type: TOGGLE_FOLLOWING_IN_PROGRESS, inProgress, id }) as const,
   setError: (errorText: string | null, errorName: string) => ({ type: SET_ERROR, errorText, errorName }) as const,
-  setFilter: (payload: { term: string, friend: boolean | null }) => ({ type: SET_FILTER, payload }) as const,
+  setFilter: (payload: { term: string, friend: boolean | null }, page: number) => ({ type: SET_FILTER, payload, page }) as const,
 }
 
 
@@ -73,32 +73,29 @@ const followUnfollow = async (
   }
 }
 
-export const follow = (id: number): ThunkActionType => {
+export const followThunk = (id: number): ThunkActionType => {
   return (dispatch: Dispatch<ActionsType>) => {
     followUnfollow(dispatch, usersAPI.getFollow, actions.follow, id);
   }
 }
 
-export const unfollow = (id: number): ThunkActionType => {
+export const unfollowThunk = (id: number): ThunkActionType => {
   return (dispatch: Dispatch<ActionsType>) => {
     followUnfollow(dispatch, usersAPI.getUnfollow, actions.unfollow, id);
   }
 }
 
 
-export const getUsersList = (pageSize: number, currentPage: number, searchValue: string, followersFilter: boolean | null): ThunkActionType => {
+export const getUsersListThunk = (pageSize: number, currentPage: number, searchValue: string, followersFilter: boolean | null): ThunkActionType => {
   return async (dispatch: Dispatch<ActionsType>) => {
-    try {
-      dispatch(actions.toggleIsFetching(true));
+    dispatch(actions.toggleIsFetching(true));
 
-      const response = await usersAPI.getUsersData(pageSize, currentPage, searchValue, followersFilter);
+    const response = await usersAPI.getUsersData(pageSize, currentPage, searchValue, followersFilter);
 
-      dispatch(actions.setUsers(response.items));
-      dispatch(actions.setTotalCount(response.totalCount));
-      dispatch(actions.setCurrentPage(currentPage));
-    } finally {
-      dispatch(actions.toggleIsFetching(false));
-    }
+    dispatch(actions.setUsers(response.items));
+    dispatch(actions.setTotalCount(response.totalCount));
+
+    dispatch(actions.toggleIsFetching(false));
   }
 }
 
@@ -210,9 +207,10 @@ const usersPageReducer = (state = initialState, action: ActionsType): InitialSta
       return {
         ...state,
         filter: {
-          ...state.filter,
+          // ...state.filter,
           ...action.payload,
-        }
+        },
+        currentPage: action.page,
       }
 
 

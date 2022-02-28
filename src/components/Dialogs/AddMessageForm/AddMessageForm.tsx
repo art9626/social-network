@@ -2,7 +2,7 @@ import React from 'react';
 import { Field, InjectedFormProps, reduxForm } from 'redux-form';
 import { required } from '../../../utils/validators/validators';
 import { Textarea } from '../../common/FormControls/FormControls';
-import { AddMessageFormDataType } from '../Dialogs';
+import { AddMessageFormDataType } from '../DialogsPage';
 
 const AddMessageForm: React.FC<InjectedFormProps<AddMessageFormDataType>> = ({ handleSubmit }) => {
   return (

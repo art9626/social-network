@@ -1,9 +1,9 @@
+import { ProfileDataSaveError } from './../utils/errors/errors';
 import { ResultCodesEnum } from './../api/authApi';
 import { InferActionsType, RootStateType } from './reduxStore';
-import { FormAction, stopSubmit } from "redux-form";
 import { ThunkAction, ThunkDispatch } from "redux-thunk";
 import { profileAPI } from "../api/profileApi";
-import { ProfileDataSaveError, ProfilePhotoSaveError, ProfileStatusSaveError } from "../utils/errors/errors";
+import { ProfilePhotoSaveError, ProfileStatusSaveError } from "../utils/errors/errors";
 
 
 type InitialStateType = typeof initialState
@@ -56,6 +56,7 @@ const SET_USER_STATUS = 'social-network/profile/SET_USER_STATUS';
 const SET_PHOTO = 'social-network/profile/SET_PHOTO';
 const TOGGLE_IN_WAITING = 'social-network/profile/TOGGLE_IN_WAITING';
 const SET_ERROR = 'social-network/profile/SET_ERROR';
+const TOGGLE_EDIT_MODE = 'social-network/profile/TOGGLE_PROFILE_INFO_EDIT_MODE';
 
 export const actions = {
   addPost: (text: string) => ({ type: ADD_POST, text }) as const,
@@ -64,45 +65,42 @@ export const actions = {
   setPhoto: (photos: PhotosType) => ({ type: SET_PHOTO, photos }) as const,
   toggleInWaiting: (inWaiting: boolean) => ({ type: TOGGLE_IN_WAITING, inWaiting }) as const,
   setError: (errorText: string | null, errorName: string) => ({ type: SET_ERROR, errorText, errorName }) as const,
+  toggleEditMode: (state: boolean, fieldName: string) => ({ type: TOGGLE_EDIT_MODE, state, fieldName }) as const,
 }
 
 
 
-export const getProfile = (id: number | null): ThunkActionType => {
+export const getProfileThunk = (id: number | null): ThunkActionType => {
   return async (dispatch: ThunkDispatch<RootStateType, unknown, ActionsType>) => {
     const response = await profileAPI.getProfileData(id)
-
     dispatch(actions.setUserProfile(response));
   }
 }
 
-export const getStatus = (id: number): ThunkActionType => {
+export const getStatusThunk = (id: number): ThunkActionType => {
   return async (dispatch: ThunkDispatch<RootStateType, unknown, ActionsType>) => {
     const response = await profileAPI.getStatus(id)
     dispatch(actions.setUserStatus(response));
   }
 }
 
-export const setStatus = (text: string): ThunkActionType => {
+export const setStatusThunk = (text: string): ThunkActionType => {
   return async (dispatch: ThunkDispatch<RootStateType, unknown, ActionsType>) => {
     try {
       const response = await profileAPI.setStatus(text)
       if (response.resultCode === ResultCodesEnum.Success) {
         dispatch(actions.setUserStatus(text));
+        dispatch(actions.toggleEditMode(false, 'statusEditMode'));
       } else {
         throw new ProfileStatusSaveError(response.messages[0]);
       }
     } catch (err) {
-      if (err instanceof ProfileStatusSaveError) {
-        dispatch(actions.setError(err.message, 'onSetStatusErrorMessage'));
-      } else {
-        throw err;
-      }
+      throw err;
     }
   }
 }
 
-export const setPhoto = (photo: File): ThunkActionType => {
+export const setPhotoThunk = (photo: File): ThunkActionType => {
   return async (dispatch: ThunkDispatch<RootStateType, unknown, ActionsType>, getState: () => RootStateType) => {
     try {
       if (getState().profilePage.errorMessages.onSetPhotoErrorMessage) {
@@ -111,7 +109,6 @@ export const setPhoto = (photo: File): ThunkActionType => {
       dispatch(actions.toggleInWaiting(true));
 
       const response = await profileAPI.setProfilePhoto(photo);
-
       if (response.resultCode === ResultCodesEnum.Success) {
         dispatch(actions.setPhoto(response.data.photos));
       } else {
@@ -130,29 +127,15 @@ export const setPhoto = (photo: File): ThunkActionType => {
 }
 
 
-export const setProfileData = (data: UserProfileType): ThunkActionType => {
-  return async (dispatch: ThunkDispatch<RootStateType, unknown, ActionsType | FormAction>, getState: () => RootStateType) => {  // FormAction тип экшена, который возвращаее stopSubmit
+export const setProfileDataThunk = (data: UserProfileType): ThunkActionType => {
+  return async (dispatch: ThunkDispatch<RootStateType, unknown, ActionsType>, getState: () => RootStateType) => {
     try {
       const id = getState().auth.id;
       const response = await profileAPI.setProfileData(data)
       if (response.resultCode === ResultCodesEnum.Success) {
-        dispatch(getProfile(id));
+        await dispatch(getProfileThunk(id));
+        dispatch(actions.toggleEditMode(false, 'profileInfoEditMode'));
       } else {
-        if (response.messages[0].indexOf('->') > -1) {
-          const errorFieldName = response.messages[0]
-            .substring(response.messages[0].indexOf('->') + 2, response.messages[0].length - 1)
-            .toLowerCase();
-
-          dispatch(stopSubmit('profileDataForm', { 'contacts': { [errorFieldName]: response.messages[0] } }));
-        } else {
-          dispatch(stopSubmit('profileDataForm', { _error: response.messages[0] }));
-        }
-
-        // Прокидываем данную ошибку наверх, потому что в компоненте ProfileInfo реализовано отображение формы в зависимости от состояния editMode
-        // Нам нужно понимать, успешно сохранились данные на сервере или нет
-        // Если успех (resultCode === ResultCodesEnum.Success) => убираем форму
-        // Если нет (resultCode !== ResultCodesEnum.Success) => нужно оставить форму и подсветить непровалидированные поля
-        // Далее в ProfileInfo прокидываем эту ошибку дальше, что бы она обработалась в App
         throw new ProfileDataSaveError(response.messages[0]);
       }
     } catch (err) {
@@ -174,9 +157,10 @@ const initialState = {
   userProfile: null as UserProfileType | null,
   userStatus: '',
   inWaiting: false,
+  profileInfoEditMode: false,
+  statusEditMode: false,
   errorMessages: {
     onSetPhotoErrorMessage: null,
-    onSetStatusErrorMessage: null,
   } as ErrorMessagesType,
 }
 
@@ -229,6 +213,12 @@ const profilePageReducer = (state = initialState, action: ActionsType): InitialS
           ...state.errorMessages,
           [action.errorName]: action.errorText,
         },
+      }
+
+    case TOGGLE_EDIT_MODE:
+      return {
+        ...state,
+        [action.fieldName]: action.state,
       }
 
 

@@ -1,4 +1,4 @@
-import { PhotosType, UserProfileType } from "../redux/profilePageReducer";
+import { ContactsType, PhotosType, UserProfileType } from "../redux/profilePageReducer";
 import { instance, OperationResultType } from "./indexApi";
 
 
@@ -6,7 +6,7 @@ import { instance, OperationResultType } from "./indexApi";
 
 export const profileAPI = {
   getProfileData: (id: number | null) => {
-    return instance.get<UserProfileType>(`/profile/${id}`).then(res => res.data);
+    return instance.get<UserProfileType>(`/profile/${id}`).then(res => { editDataContacts(res.data); return res.data });
   },
 
   getStatus: (id: number) => {
@@ -20,10 +20,21 @@ export const profileAPI = {
   setProfilePhoto: (photo: File) => {
     const formData = new FormData();
     formData.append('image', photo);
-    return instance.put<OperationResultType<{ photos: PhotosType }>>('/profile/photo', formData, {headers: {'Content-Type' : 'multipart/form-data'}}).then(res => res.data);
+    return instance.put<OperationResultType<{ photos: PhotosType }>>('/profile/photo', formData, { headers: { 'Content-Type': 'multipart/form-data' } }).then(res => res.data);
   },
 
   setProfileData: (data: UserProfileType) => {
     return instance.put<OperationResultType>('/profile', data).then(res => res.data);
   },
 }
+
+const editDataContacts = (data: UserProfileType) => {
+  const { contacts } = data;
+
+  Object.keys(contacts).map((item: string) => {
+    if (contacts[item as keyof ContactsType] === null) {
+      return contacts[item as keyof ContactsType] = '';
+    }
+    return contacts[item as keyof ContactsType];
+  })
+};

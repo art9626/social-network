@@ -13,7 +13,7 @@ type UserCardPropsType = {
   isAuth: IsAuthType;
 }
 
-const UserCard: React.FC<UserCardPropsType> = ({ 
+export const UserCard: React.FC<UserCardPropsType> = React.memo(({ 
   user, 
   unfollow, 
   follow, 
@@ -63,6 +63,4 @@ const UserCard: React.FC<UserCardPropsType> = ({
       </div>
     </li>
   );
-}
-
-export default UserCard;
+});

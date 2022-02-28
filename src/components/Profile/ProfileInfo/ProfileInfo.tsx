@@ -1,61 +1,42 @@
-import React from 'react';
+import React, { MouseEvent } from 'react';
 import Preloader from '../../common/Preloader/Preloader';
 import classes from './ProfileInfo.module.css'
-// import ProfileStatus from './ProfileStatus/ProfileStatus';
-import { useState } from 'react';
-import ProfileData from './ProfileData/ProfileData';
-import ProfileDataForm from './ProfileDataForm/ProfileDataForm';
+import { ProfileDataForm } from './ProfileDataForm/ProfileDataForm';
 import ProfilePhoto from './ProfilePhoto/ProfilePhoto';
-import { ErrorMessagesType, UserProfileType } from '../../../redux/profilePageReducer';
-import { ProfileDataSaveError } from '../../../utils/errors/errors';
-import ProfileStatus from './ProfileStatus/ProfileStatus';
-import { SetErrorType } from '../Profile';
+import { actions, setProfileDataThunk, UserProfileType } from '../../../redux/profilePageReducer';
+import { useDispatch, useSelector } from 'react-redux';
+import { getProfileInfoEditMode, getUserProfile } from '../../../redux/profileSelecrors';
+import { ProfileData } from './ProfileData/ProfileData';
+import { ProfileStatus } from './ProfileStatus/ProfileStatus';
 
 type PropsType = {
-  userProfile: UserProfileType | null;
-  userStatus: string;
-  setStatus: (text: string) => void;
   isOwner: boolean;
-  setPhoto: (photo: File) => void;
-  inWaiting: boolean;
-  setProfileData: (data: UserProfileType) => Promise<void>;
-  errorMessages: ErrorMessagesType;
-  setError: SetErrorType;
 }
 
 
-const ProfileInfo: React.FC<PropsType> = ({
-  userProfile,
-  userStatus,
-  setStatus,
-  isOwner,
-  setPhoto,
-  inWaiting,
-  setProfileData,
-  errorMessages,
-  setError,
-}) => {
+export const ProfileInfo: React.FC<PropsType> = React.memo(({ isOwner }) => {
 
-  const [editMode, setEditMode] = useState(false);
+  const userProfile = useSelector(getUserProfile);
+  const editMode = useSelector(getProfileInfoEditMode);
+
+  const dispatch = useDispatch();
+
+  const setProfileData = (data: UserProfileType) => dispatch(setProfileDataThunk(data));
+  const setEditMode = (state: boolean, fieldName: string) => dispatch(actions.toggleEditMode(state, fieldName));
+
+
 
   const activeEditMode = () => {
-    setEditMode(true);
+    setEditMode(true, 'profileInfoEditMode');
   }
 
-  const deactiveEditMode = () => {
-    setEditMode(false);
+  const deactiveEditMode = (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    setEditMode(false, 'profileInfoEditMode');
   }
 
-  const onSubmitForm = (values: UserProfileType) => {
-    setProfileData(values)
-      //remove.then
-      .then(() => setEditMode(false))
-      .catch((err) => {
-        if (err instanceof ProfileDataSaveError) {
-          throw err;
-        }
-      })
-  }
+
+
 
   return (
     <>
@@ -64,35 +45,27 @@ const ProfileInfo: React.FC<PropsType> = ({
           ? <div>
             <div className={classes.profileContent}>
 
-              <ProfilePhoto userProfile={userProfile} inWaiting={inWaiting} setPhoto={setPhoto} isOwner={isOwner} errorMessage={errorMessages.onSetPhotoErrorMessage} />
+              <ProfilePhoto userProfile={userProfile} isOwner={isOwner} />
 
               {
                 editMode
                   ? <ProfileDataForm
-                    initialValues={userProfile}
-                    userProfile={userProfile}
-                    onSubmit={onSubmitForm}
-                    deactiveEditMode={deactiveEditMode}
-                  />
+                      initialValues={userProfile}
+                      deactiveEditMode={deactiveEditMode}
+                      setProfileData={setProfileData}
+                    />
                   : <ProfileData
-                    userProfile={userProfile}
-                    activeEditMode={activeEditMode}
-                    isOwner={isOwner}
-                  />
+                      userProfile={userProfile}
+                      activeEditMode={activeEditMode}
+                      isOwner={isOwner}
+                    />
+
               }
-              <ProfileStatus
-                userStatus={userStatus}
-                setUserStatus={setStatus}
-                isOwner={isOwner}
-                errorMessage={errorMessages.onSetStatusErrorMessage}
-                setError={setError}
-              />
+              <ProfileStatus isOwner={isOwner} />
             </div>
           </div>
           : <Preloader />
       }
     </>
   )
-}
-
-export default ProfileInfo;
+});
