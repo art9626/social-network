@@ -115,40 +115,4 @@ const authReducer = (state = initialState, action: ActionsType): InitialStateTyp
   }
 }
 
-
-// Использование MappedType и ConditionalType
-
-// type MyType<T> = T extends 'string' ? LikeType : DislikeType;
-
-// type LikeType = {
-//   myType: string;
-// }
-
-// type DislikeType = {
-//   myType: number;
-// }
-
-// const a: MyType<'string'> = {
-//   myType: 'fdsfd',
-// }
-
-// const b: MyType<'number'> = {
-//   myType: 1,
-// }
-
-// const obj = {
-//   a: {name: 'Art'},
-//   c: {age: 29},
-// }
-
-// const obj1 = {
-//   name: 'Art',
-//   age: 29,
-// }
-
-// type SomeType<T> = T extends {[key: string]: infer U} ? U : never;
-
-// const MyName: SomeType<typeof obj> = {name: 'dsf'};
-// const MyName1: SomeType<typeof obj1> = 'sdffs';
-
 export default authReducer;

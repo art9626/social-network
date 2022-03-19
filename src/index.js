@@ -1,10 +1,8 @@
-import 'normalize.css';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter, /* HashRouter */ } from 'react-router-dom';
-
 import store from './redux/reduxStore';
 import { Provider } from 'react-redux';
 import App from './App';
@@ -15,12 +13,12 @@ ReactDOM.render(
   // HashRouter using only for git hab pages diploy!!!
   // <HashRouter>
   <BrowserRouter>
-    <Provider store={store}>
-      <App />
-    </Provider>
+      <Provider store={store}>
+        <App />
+      </Provider>
   </BrowserRouter>,
   // </HashRouter>,
-    document.getElementById('root')
+  document.getElementById('root')
 );
 
 

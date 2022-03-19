@@ -1,5 +1,6 @@
+import { Typography, useTheme } from '@mui/material';
 import { Field, Form, Formik, FormikErrors, FormikHelpers, FormikProps } from 'formik';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { actions, setStatusThunk } from '../../../../redux/profilePageReducer';
 import { getErrorMessages, getStatusEditMode, getUserStatus } from '../../../../redux/profileSelecrors';
@@ -25,6 +26,9 @@ export const ProfileStatus: React.FC<PropsType> = ({ isOwner }) => {
     }
   };
 
+  useEffect(() => {
+    setEditMode(false, 'statusEditMode')
+  }, [])
 
   return (
     <div>
@@ -34,7 +38,12 @@ export const ProfileStatus: React.FC<PropsType> = ({ isOwner }) => {
       {
         statusEditMode
           ? <ProfileStatusForm />
-          : <span onDoubleClick={activateEditMode}>{userStatus || '---'}</span>
+          : <Typography 
+              onDoubleClick={activateEditMode}
+              component='span'
+            >
+              {userStatus || '---'}
+            </Typography>
       }
     </div>
   )
@@ -55,7 +64,7 @@ const ProfileStatusForm: React.FC = () => {
   const dispatch = useDispatch();
   const setStatus = (text: string) => dispatch(setStatusThunk(text));
 
-  const initialValues: InitialValuesType = { userStatus };
+  const initialValues: InitialValuesType = { userStatus: userStatus === null ? '' : userStatus };
 
 
   return (

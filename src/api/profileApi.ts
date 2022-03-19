@@ -29,7 +29,15 @@ export const profileAPI = {
 }
 
 const editDataContacts = (data: UserProfileType) => {
-  const { contacts } = data;
+  const { aboutMe, contacts, lookingForAJobDescription } = data;
+
+  if (aboutMe === null) {
+    data.aboutMe = '';
+  }
+
+  if (lookingForAJobDescription === null) {
+    data.lookingForAJobDescription = '';
+  }
 
   Object.keys(contacts).map((item: string) => {
     if (contacts[item as keyof ContactsType] === null) {

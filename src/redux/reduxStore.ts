@@ -6,6 +6,7 @@ import usersPageReducer from './usersPageReducer';
 import thunkMiddleware from 'redux-thunk'
 import appReducer from './appReducer';
 import { reducer as formReducer } from 'redux-form'
+import chatReducer from './chatReducer';
 
 const rootReducer = combineReducers({
   profilePage: profilePageReducer,
@@ -14,6 +15,7 @@ const rootReducer = combineReducers({
   auth: authReducer,
   app: appReducer,
   form: formReducer,
+  chat: chatReducer,
 });
 
 // Создание store с расширением Redux Devtools

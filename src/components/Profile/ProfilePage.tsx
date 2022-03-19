@@ -62,7 +62,7 @@ const ProfilePage: React.FC = React.memo(() => {
       <ProfileInfo
         isOwner={isOwner}
       />
-      <MyPosts />
+      {/* <MyPosts /> */}
     </div>
   );
 });

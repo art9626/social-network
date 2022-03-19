@@ -10,7 +10,6 @@ import { useSearchParams } from "react-router-dom";
 
 
 const UsersPage: React.FC = React.memo(() => {
-
   const [searchParams, setSearchParams] = useSearchParams();
   const filter = useSelector(getFilter);
   const totalCount = useSelector(getTotalCount);
@@ -21,6 +20,15 @@ const UsersPage: React.FC = React.memo(() => {
   const dispatch = useDispatch();
 
   const setFilter = (filter: FilterType, page: number) => dispatch(actions.setFilter(filter, page));
+  const setCurrentPage = (page: number) => dispatch(actions.setCurrentPage(page));
+  const getUsersList = (
+    pageSize: number,
+    currentPage: number,
+    searchValue: string,
+    followersFilter: boolean | null
+  ) => dispatch(getUsersListThunk(pageSize, currentPage, searchValue, followersFilter));
+
+
 
   useEffect(() => {
     if (filter) {
@@ -52,17 +60,12 @@ const UsersPage: React.FC = React.memo(() => {
   
       setFilter(filterValues, +page);
     }
+
+    return () => {
+      setFilter({ term: '', friend: null }, 1);
+    };
   }, []);
 
-
-
-  const setCurrentPage = (page: number) => dispatch(actions.setCurrentPage(page));
-  const getUsersList = (
-    pageSize: number,
-    currentPage: number,
-    searchValue: string,
-    followersFilter: boolean | null
-  ) => dispatch(getUsersListThunk(pageSize, currentPage, searchValue, followersFilter))
 
 
   return (

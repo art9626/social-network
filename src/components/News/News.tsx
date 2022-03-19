@@ -2,7 +2,6 @@ import React from 'react';
 import classes from './News.module.css'
 
 const News: React.FC = () => {
-  console.log('news');
   return (
     <div>
       <h1 className={classes.header}>
