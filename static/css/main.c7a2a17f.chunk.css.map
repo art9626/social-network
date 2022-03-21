@@ -1,0 +1,1 @@
+{"version":3,"sources":["webpack://src/index.css"],"names":[],"mappings":"AAEA,EACE,qBACF,CAEA,KACE,QACF","file":"main.c7a2a17f.chunk.css","sourcesContent":["@import-nirmolize;\n\n* {\n  box-sizing: border-box;\n}\n\nbody {\n  margin: 0;\n}\n"]}
